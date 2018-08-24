@@ -29,6 +29,9 @@ import (
 	pstore "github.com/libp2p/go-libp2p-peerstore"
 	ma "github.com/multiformats/go-multiaddr"
 	gologging "github.com/whyrusleeping/go-logging"
+
+	"github.com/gorilla/mux"
+	"net/http"
 )
 
 // Block represents each 'item' in the blockchain
@@ -43,7 +46,16 @@ type Block struct {
 // Blockchain is a series of validated Blocks
 var Blockchain []Block
 
+// Message takes incoming JSON payload for writing heart rate
+type Message struct {
+	BPM int
+}
+
 var mutex = &sync.Mutex{}
+
+func init() { // Idea from https://appliedgo.net/networking/
+	log.SetFlags(log.Lshortfile)
+}
 
 // makeBasicHost creates a LibP2P host with a random peer ID listening on the
 // given multiaddress. It will use secio if secio is true.
@@ -233,7 +245,7 @@ func main() {
 		// a user-defined protocol name.
 		ha.SetStreamHandler("/p2p/1.0.0", handleStream)
 
-		select {} // hang forever
+		//select {} // hang forever
 		/**** This is where the listener code ends ****/
 	} else {
 		ha.SetStreamHandler("/p2p/1.0.0", handleStream)
@@ -280,9 +292,11 @@ func main() {
 		go writeData(rw)
 		go readData(rw)
 
-		select {} // hang forever
+		//select {} // hang forever
 
 	}
+
+	log.Fatal(muxServer(*listenF)) // function is in mux.go
 }
 
 // make sure block is valid by checking index, and comparing the hash of the previous block
@@ -340,3 +354,100 @@ func  GetMyIP() string {
 	}
 	return MyIP
 }
+
+
+///////
+///////
+///////
+///////
+///////
+/////// ADDING
+/////// MUX
+/////// SERVER
+/////// HERE
+///////
+///////
+///////
+///////
+///////
+
+
+// web server
+func muxServer(httpPort int) error {
+	mux := makeMuxRouter()
+	//httpPort := os.Getenv("PORT")
+	log.Println("HTTP Server Listening on port :", httpPort)
+	s := &http.Server{
+		Addr:           ":" + strconv.Itoa(httpPort),
+		Handler:        mux,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+
+	if err := s.ListenAndServe(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// create handlers
+func makeMuxRouter() http.Handler {
+	muxRouter := mux.NewRouter()
+	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
+	muxRouter.HandleFunc("/", handleWriteBlock).Methods("POST")
+	return muxRouter
+}
+
+// write blockchain when we receive an http request
+func handleGetBlockchain(w http.ResponseWriter, r *http.Request) {
+	mutex.Lock()
+	bytes, err := json.MarshalIndent(Blockchain, "", "  ")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	mutex.Unlock()
+	
+	io.WriteString(w, string(bytes))
+}
+
+// takes JSON payload as an input for heart rate (BPM)
+func handleWriteBlock(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var m Message
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&m); err != nil {
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+
+	mutex.Lock()
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], m.BPM)
+	mutex.Unlock()
+
+	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
+		mutex.Lock()
+		Blockchain = append(Blockchain, newBlock)
+		mutex.Unlock()
+		spew.Dump(Blockchain)
+	}
+
+	respondWithJSON(w, r, http.StatusCreated, newBlock)
+
+}
+
+func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
+	response, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("HTTP 500: Internal Server Error"))
+		return
+	}
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
