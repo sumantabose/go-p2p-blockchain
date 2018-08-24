@@ -34,6 +34,22 @@ import (
 	"net/http"
 )
 
+
+
+
+///// FLAG VARIABLES
+
+	var listenF *int
+	var target *string
+	var secio *bool
+	var verbose *bool
+	var seed *int64
+
+/////
+
+
+
+
 // Block represents each 'item' in the blockchain
 type Block struct {
 	Index     int
@@ -70,6 +86,7 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) (host.Host, error
 	} else {
 		r = mrand.New(mrand.NewSource(randseed))
 	}
+	if *verbose { log.Printf("r = ", r) }
 
 	// Generate a key pair for this host. We will use it
 	// to obtain a valid host ID.
@@ -77,25 +94,34 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) (host.Host, error
 	if err != nil {
 		return nil, err
 	}
+	if *verbose { log.Printf("priv = ", priv) }
 
 	opts := []libp2p.Option{
 		libp2p.ListenAddrStrings(fmt.Sprintf("/ip4/"+GetMyIP()+"/tcp/%d", listenPort)),
 		libp2p.Identity(priv),
 	}
+	if *verbose { log.Printf("opts = ", opts) }
 
 	basicHost, err := libp2p.New(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}
+	if *verbose {
+		log.Printf("basicHost = ", basicHost)
+		log.Printf("basicHost.ID() = ", basicHost.ID())
+		log.Printf("basicHost.ID().Pretty() = ", basicHost.ID().Pretty())
+	}
 
 	// Build host multiaddress
 	hostAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ipfs/%s", basicHost.ID().Pretty()))
+	if *verbose { log.Printf("hostAddr = ", hostAddr) }
 
 	// Now we can build a full multiaddress to reach this host
 	// by encapsulating both addresses:
 	addr := basicHost.Addrs()[0]
+	if *verbose { log.Printf("addr = ", addr) }
 	fullAddr := addr.Encapsulate(hostAddr)
-	log.Printf("I am %s\n", fullAddr)
+	log.Printf("My fullAddr = %s\n", fullAddr)
 	if secio {
 		log.Printf("Now run \"go run main.go -l %d -d %s -secio\" on a different terminal\n", listenPort+1, fullAddr)
 	} else {
@@ -223,10 +249,11 @@ func main() {
 	golog.SetAllLoggers(gologging.INFO) // Change to DEBUG for extra info
 
 	// Parse options from the command line
-	listenF := flag.Int("l", 0, "wait for incoming connections")
-	target := flag.String("d", "", "target peer to dial")
-	secio := flag.Bool("secio", false, "enable secio")
-	seed := flag.Int64("seed", 0, "set random seed for id generation")
+	listenF = flag.Int("l", 0, "wait for incoming connections")
+	target = flag.String("d", "", "target peer to dial")
+	secio = flag.Bool("secio", false, "enable secio")	
+	verbose = flag.Bool("verbose", false, "enable verbose")
+	seed = flag.Int64("seed", 0, "set random seed for id generation")
 	flag.Parse()
 
 	if *listenF == 0 {
@@ -238,6 +265,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if *verbose { log.Printf("ha = ", ha) }
 
 	if *target == "" {
 		log.Println("listening for connections")
@@ -256,22 +284,29 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		if *verbose { log.Printf("ipfsaddr = ", ipfsaddr) }
+		if *verbose { log.Printf("*target = ", *target) }
 
 		pid, err := ipfsaddr.ValueForProtocol(ma.P_IPFS)
 		if err != nil {
 			log.Fatalln(err)
 		}
+		if *verbose { log.Printf("pid = ", pid) }
+		if *verbose { log.Printf("ma.P_IPFS = ", ma.P_IPFS) }
 
 		peerid, err := peer.IDB58Decode(pid)
 		if err != nil {
 			log.Fatalln(err)
 		}
+		if *verbose { log.Println("peerid = ", peerid) }
 
 		// Decapsulate the /ipfs/<peerID> part from the target
 		// /ip4/<a.b.c.d>/ipfs/<peer> becomes /ip4/<a.b.c.d>
 		targetPeerAddr, _ := ma.NewMultiaddr(
 			fmt.Sprintf("/ipfs/%s", peer.IDB58Encode(peerid)))
 		targetAddr := ipfsaddr.Decapsulate(targetPeerAddr)
+		if *verbose { log.Printf("targetPeerAddr = ", targetPeerAddr) }
+		if *verbose { log.Printf("targetAddr = ", targetAddr) }
 
 		// We have a peer ID and a targetAddr so we add it to the peerstore
 		// so LibP2P knows how to contact it
