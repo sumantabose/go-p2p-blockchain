@@ -4,9 +4,17 @@ Written by Sumanta Bose, 4 Sept 2018
 
 MUX server methods available are:
     http://localhost:port/next
+    http://localhost:port/next/{loop}
     http://localhost:port/info
     http://localhost:port/info/{loc}
 
+FLAGS are:
+  -data string
+        pathname of data directory (default "data")
+  -locs int
+        total locations in supply chain (default 6)
+  -port int
+        mux server listen port (default 8080)
 */
 
 package main
@@ -86,6 +94,7 @@ func makeMUXRouter() http.Handler { // create handlers
     muxRouter.HandleFunc("/info", handleInfoAll).Methods("GET")
     muxRouter.HandleFunc("/info/{loc}", handleInfoLoc).Methods("GET")
     muxRouter.HandleFunc("/next", handleNext).Methods("GET")
+    muxRouter.HandleFunc("/next/{loop}", handleNextLoop).Methods("GET")
     return muxRouter
 }
 
@@ -119,6 +128,26 @@ func handleInfoLoc(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleNext(w http.ResponseWriter, r *http.Request) {
+    newProduct := updateProductData()
+    gobCheck(writeGob(ProductData, len(ProductData)))
+    respondWithJSON(w, r, http.StatusCreated, newProduct)
+}
+
+func handleNextLoop(w http.ResponseWriter, r *http.Request) {
+    params := mux.Vars(r)
+    loop, err := strconv.Atoi(params["loop"])
+
+    if err == nil {
+        for i := 0 ; i < loop ; i++ {
+            // handleNext(w,r) // RISKY (don't attempt): server.go:2923: http: multiple response.WriteHeader calls
+            _ = updateProductData()
+            gobCheck(writeGob(ProductData, len(ProductData)))
+        }
+        respondWithJSON(w, r, http.StatusCreated, ProductData)
+    }
+}
+
+func updateProductData() Product {
     newProduct := Product{}
     newProduct.Name = genRandString(4)
     newProduct.SerialNo = len(ProductData) + 1
@@ -129,14 +158,13 @@ func handleNext(w http.ResponseWriter, r *http.Request) {
     for i, _ := range ProductData {
         if i < len(ProductData) - 1 { // ignore the newest element i.e. newProduct
             if ProductData[i].Location < *totalLocs{
-                ProductData[i].Location = ProductData[i].Location + int(math.Floor(float64(genRandInt(100,0))/70)) // 30% random increment
+                ProductData[i].Location = ProductData[i].Location + int(math.Floor(float64(genRandInt(100,0))/80)) // 20% random increment
             }
         }
     }
-    fmt.Println("----ProductData---- ver", len(ProductData))
+    fmt.Println("----ProductData---- len:", len(ProductData))
     spew.Dump(ProductData)
-    gobCheck(writeGob(ProductData, len(ProductData)))
-    respondWithJSON(w, r, http.StatusCreated, newProduct)
+    return newProduct
 }
 
 func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
@@ -219,7 +247,7 @@ func genRandString(n int) string { // generate Random String of length 'n'
     return string(val)
 }
 
-func genRandInt(n int, offset int) int { // generate Random Integer less than 'n'
+func genRandInt(n int, offset int) int { // generate Random Integer less than 'n' with an offset
     myRandSource := rand.NewSource(time.Now().UnixNano())
     myRand := rand.New(myRandSource)
     val := myRand.Intn(n) + offset
