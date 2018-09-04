@@ -1,8 +1,20 @@
+/* README
+
+Written by Sumanta Bose, 4 Sept 2018
+
+MUX server methods available are:
+    http://localhost:port/next
+    http://localhost:port/info
+    http://localhost:port/info/{loc}
+
+*/
+
 package main
 
 import (
     "io"
     "os"
+    "fmt"
     "log"
     "flag"
     "time"
@@ -18,10 +30,10 @@ import (
     "github.com/davecgh/go-spew/spew"
 )
 
-///// GLOBAL VARIABLES
+///// GLOBAL FLAGS & VARIABLES
 
-var listenPort, totalLocs *int
-var dataDir *string
+var listenPort, totalLocs *int // listen port & total locations in the supply chain
+var dataDir *string // data directory where the gob files are stored
 
 type Product struct {
     Name string `json:"Name"`
@@ -30,7 +42,7 @@ type Product struct {
     Location int `json:"Location"`
 }
 
-var ProductData []Product
+var ProductData []Product // `Product` array, to be saved as gob file
 
 ///// LIST OF FUNCTIONS
 
@@ -128,6 +140,7 @@ func handleNext(w http.ResponseWriter, r *http.Request) {
         }
     }
     spew.Dump(ProductData)
+    fmt.Println("-----------")
     gobCheck(writeGob(ProductData, len(ProductData)))
     respondWithJSON(w, r, http.StatusCreated, newProduct)
 }
@@ -193,7 +206,7 @@ func readGob(object interface{}, filePath string) error {
        return err
 }
 
-func gobCheck(e error) {
+func gobCheck(e error) { // Inspired from http://www.robotamer.com/code/go/gotamer/gob.html
     if e != nil {
         _, file, line, _ := runtime.Caller(1)
         log.Println(line, "\t", file, "\n", e)
@@ -218,4 +231,5 @@ func genRandInt(n int) int { // generate Random Integer less than 'n'
     val := myRand.Intn(n) + 10
     return val
 }
+
 ///////////////////////////////////////////////////////
