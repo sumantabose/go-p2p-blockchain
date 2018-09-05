@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 4 Sept 2018
+Written by Sumanta Bose, 5 Sept 2018
 
 MUX server methods available are:
     http://localhost:port/next
@@ -58,7 +58,7 @@ var ProductData []Product // `Product` array, to be saved as gob file
 func init() {
     log.SetFlags(log.Lshortfile)
 
-    log.Printf("Welcome to NTU Blockchain Server!")
+    log.Printf("Welcome to Sumanta's Supply Chain Dashboard Server!")
     listenPort = flag.Int("port", 8080, "mux server listen port")
     totalLocs = flag.Int("locs", 6, "total locations in supply chain")
     dataDir = flag.String("data", "data", "pathname of data directory")
@@ -136,14 +136,16 @@ func handleNext(w http.ResponseWriter, r *http.Request) {
 func handleNextLoop(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
     loop, err := strconv.Atoi(params["loop"])
+    var newProducts []Product
 
     if err == nil {
         for i := 0 ; i < loop ; i++ {
             // handleNext(w,r) // RISKY (don't attempt): server.go:2923: http: multiple response.WriteHeader calls
-            _ = updateProductData()
+            newProduct := updateProductData()
+            newProducts = append(newProducts, newProduct)
             gobCheck(writeGob(ProductData, len(ProductData)))
         }
-        respondWithJSON(w, r, http.StatusCreated, ProductData)
+        respondWithJSON(w, r, http.StatusCreated, newProducts)
     }
 }
 
