@@ -37,6 +37,10 @@ type Message struct {
 	BPM int
 }
 
+type newTarget_json struct {
+	NewTarget string
+}
+
 var mutex = &sync.Mutex{}
 
 
