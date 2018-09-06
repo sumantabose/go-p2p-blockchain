@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"crypto/rand"
-	//
 	//"encoding/hex"
 	"encoding/json"
 	//"flag"
@@ -57,7 +56,7 @@ func p2pInit() {
 	} else {
 		connect2Target(*target)
 	}
-	log.Println("1th version Peers =", ha.Peerstore().Peers())
+	log.Println("1st version Peers =", ha.Peerstore().Peers())
 
 	// for i, _ := range ha.Peerstore().Peers() {
 	// 	log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
