@@ -47,6 +47,7 @@ func p2pInit() {
 	}
 	// Make a host that listens on the given multiaddress
 	makeBasicHost(*listenF, *secio, *seed)
+	log.Println("0th version Peers =", ha.Peerstore().Peers())
 	ha.SetStreamHandler("/p2p/1.0.0", handleStream)
 
 	if *target == "" {
@@ -56,10 +57,16 @@ func p2pInit() {
 	} else {
 		connect2Target(*target)
 	}
+	log.Println("1th version Peers =", ha.Peerstore().Peers())
+
+	// for i, _ := range ha.Peerstore().Peers() {
+	// 	log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
+	// }
 }
 
 
 func connect2Target(newTarget string) {
+	log.Println("Attempting to connect to", newTarget)
 	// The following code extracts target's peer ID from the
 	// given multiaddress
 	ipfsaddr, err := ma.NewMultiaddr(newTarget)
@@ -187,6 +194,7 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) { //(host.Host, e
 func handleStream(s net.Stream) {
 
 	log.Println("Got a new stream!")
+	log.Println("New list of peers =", ha.Peerstore().Peers())
 
 	// Create a buffer stream for non blocking read and write.
 	rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
@@ -200,6 +208,7 @@ func handleStream(s net.Stream) {
     signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
     go func() {
         <-ch
+        log.Println("Received Interrupt. Exiting now.")
         cleanup(rw)
         os.Exit(1)
     }()
