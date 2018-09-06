@@ -95,7 +95,23 @@ func makeMUXRouter() http.Handler { // create handlers
     muxRouter.HandleFunc("/info/{loc}", handleInfoLoc).Methods("GET")
     muxRouter.HandleFunc("/next", handleNext).Methods("GET")
     muxRouter.HandleFunc("/next/{loop}", handleNextLoop).Methods("GET")
+    muxRouter.HandleFunc("/post", handlePOST).Methods("POST")
     return muxRouter
+}
+
+func handlePOST(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    var pdt Product
+
+    decoder := json.NewDecoder(r.Body)
+    if err := decoder.Decode(&pdt); err != nil {
+        respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+        return
+    }
+    defer r.Body.Close()
+
+    fmt.Println("Received in POST:", pdt)
+    respondWithJSON(w, r, http.StatusCreated, pdt)
 }
 
 func handleInfoAll(w http.ResponseWriter, r *http.Request) {
