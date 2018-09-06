@@ -17,11 +17,13 @@ type Product struct {
 }
 
 func main() {
+	
+	fmt.Println("\nGET\n")
 	response, err := http.Get("http://localhost:8090/next")
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	defer response.Body.Close()
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -37,12 +39,13 @@ func main() {
 	fmt.Println(responseObject.Location)
 
 	///////
-
+	
+	fmt.Println("\nGET LOOP\n")
 	response, err = http.Get("http://localhost:8090/next/5")
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	defer response.Body.Close()
 	responseData, err = ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
