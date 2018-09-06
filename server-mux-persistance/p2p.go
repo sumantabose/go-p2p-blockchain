@@ -62,6 +62,16 @@ func p2pInit() {
 	// for i, _ := range ha.Peerstore().Peers() {
 	// 	log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
 	// }
+
+	go func() {
+		for {
+			time.Sleep(5 * time.Second)
+			fmt.Println("\nList of peers:")
+			for i, _ := range ha.Peerstore().Peers() {
+				log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
+			}
+		}
+	}()
 }
 
 
@@ -92,7 +102,7 @@ func connect2Target(newTarget string) {
 	// Decapsulate the /ipfs/<peerID> part from the target
 	// /ip4/<a.b.c.d>/ipfs/<peer> becomes /ip4/<a.b.c.d>
 	targetPeerAddr, _ := ma.NewMultiaddr(
-	fmt.Sprintf("/ipfs/%s", peer.IDB58Encode(peerid)))
+		fmt.Sprintf("/ipfs/%s", peer.IDB58Encode(peerid)))
 	targetAddr := ipfsaddr.Decapsulate(targetPeerAddr)
 	if *verbose { log.Printf("targetPeerAddr = ", targetPeerAddr) }
 	if *verbose { log.Printf("targetAddr = ", targetAddr) }
