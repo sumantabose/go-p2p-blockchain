@@ -54,20 +54,20 @@ func p2pInit() {
 		// Set a stream handler on host A. /p2p/1.0.0 is
 		// a user-defined protocol name.
 	} else {
-		connect2Target()
+		connect2Target(*target)
 	}
 }
 
 
-func connect2Target() {
+func connect2Target(newTarget string) {
 	// The following code extracts target's peer ID from the
 	// given multiaddress
-	ipfsaddr, err := ma.NewMultiaddr(*target)
+	ipfsaddr, err := ma.NewMultiaddr(newTarget)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	if *verbose { log.Printf("ipfsaddr = ", ipfsaddr) }
-	if *verbose { log.Printf("*target = ", *target) }
+	if *verbose { log.Printf("Target = ", newTarget) }
 
 	pid, err := ipfsaddr.ValueForProtocol(ma.P_IPFS)
 	if err != nil {
@@ -173,7 +173,7 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) { //(host.Host, e
 	fullAddr := addr.Encapsulate(hostAddr)
 	log.Printf("My fullAddr = %s\n", fullAddr)
 	if secio {
-		log.Printf("Now run \"go run defs.go p2p.go mux.go blockchain.go  main.go -l %d -d %s -secio\" on a different terminal\n", listenPort+1, fullAddr)
+		log.Printf("Now run \"go run defs.go p2p.go mux.go blockchain.go main.go -l %d -d %s -secio\" on a different terminal\n", listenPort+1, fullAddr)
 	} else {
 		log.Printf("Now run \"go run defs.go p2p.go mux.go blockchain.go main.go -l %d -d %s\" on a different terminal\n", listenPort+1, fullAddr)
 	}
