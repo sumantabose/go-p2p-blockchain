@@ -5,15 +5,18 @@ import (
 	"sync"
 	"flag"
 	gonet "net"
+	host "github.com/libp2p/go-libp2p-host"
 )
 
-///// FLAG VARIABLES
+///// FLAG & VARIABLES
 
 	var listenF *int
 	var target *string
 	var secio *bool
 	var verbose *bool
 	var seed *int64
+
+	var ha host.Host
 
 /////
 
