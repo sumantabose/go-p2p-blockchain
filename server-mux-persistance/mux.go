@@ -37,6 +37,7 @@ func makeMuxRouter() http.Handler {
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
 	muxRouter.HandleFunc("/", handleWriteBlock).Methods("POST")
+	muxRouter.HandleFunc("/connect", handleConnect).Methods("POST")
 	return muxRouter
 }
 
@@ -77,7 +78,23 @@ func handleWriteBlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, r, http.StatusCreated, newBlock)
+}
 
+func handleConnect(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var m newTarget_json
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&m); err != nil {
+		log.Println(err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+
+	log.Println("mux NewTarget =", m.NewTarget)
+	connect2Target(m.NewTarget)
+	respondWithJSON(w, r, http.StatusCreated, m.NewTarget)
 }
 
 func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
