@@ -7,11 +7,14 @@ Written by Sumanta Bose, 7 Sept 2018
 package main
 
 import (
+	"os"
     "log"
     "time"
     "bytes"
+    "syscall"
     "net/http"
     "math/rand"
+    "os/signal"
     "io/ioutil"
     "encoding/json"
 
@@ -36,14 +39,23 @@ var ListOfPeers []Peer
 ///// LIST OF FUNCTIONS
 
 func init() {
-    log.SetFlags(log.Lshortfile)
-    thisPeer = Peer {PeerAddress : genRandString(15)}
+	log.SetFlags(log.Lshortfile)
+    go func() {
+    	signalChan := make(chan os.Signal)
+    	signal.Notify(signalChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+        <- signalChan
+        log.Println("Received Interrupt. Exiting now.")
+        //ExitProtocol()
+        os.Exit(1)
+    }()
 }
 
 func main() {
+	thisPeer = Peer {PeerAddress : genRandString(15)}
 	queryP2PList()
 	joinP2PNet()
 	queryP2PList()
+	select{}
 }
 
 
