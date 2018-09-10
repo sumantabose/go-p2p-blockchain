@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 7 Sept 2018
+Written by Sumanta Bose, 10 Sept 2018
 
 */
 
@@ -84,7 +84,6 @@ func handleQuery(w http.ResponseWriter, r *http.Request) {
 func handleJoin(w http.ResponseWriter, r *http.Request) {
     log.Println("handleJoin() API called")
     w.Header().Set("Content-Type", "application/json")
-    // var peer Peer
     var peer PeerProfile
 
     decoder := json.NewDecoder(r.Body)
@@ -114,8 +113,3 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
     w.WriteHeader(code)
     w.Write(response)
 }
-
-
-
-
-

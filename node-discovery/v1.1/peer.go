@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 7 Sept 2018
+Written by Sumanta Bose, 10 Sept 2018
 
 */
 
@@ -86,7 +86,6 @@ func queryP2PList() { // Query the list of peers in the P2P Network from the Boo
 		return
 	}
 
-	//var responseObject ListOfPeers
 	json.Unmarshal(responseData, &ListOfPeers)
 	spew.Dump(ListOfPeers)
 }
@@ -130,8 +129,3 @@ func genRandString(n int) string { // generate Random String of length 'n'
     }
     return string(val)
 }
-
-
-
-
-
