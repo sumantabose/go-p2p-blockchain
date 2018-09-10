@@ -132,14 +132,14 @@ func updatePeerGraph(inPeer PeerProfile) error {
     
     // Update PeerGraph
     graphMutex.Lock()
-    if *verbose { log.Println("PeerGraph before update = ", PeerGraph) }
-    PeerGraph[inPeer.ThisPeer.Addr()] = inPeer
-    for _, neighbor := range inPeer.Neighbors {
-        profile := PeerGraph[neighbor.Addr()]
-        profile.Neighbors = append(profile.Neighbors, inPeer.ThisPeer)
-        PeerGraph[neighbor.Addr()] = profile
-    }
-    if *verbose { log.Println("PeerGraph after update = ", PeerGraph) ; spew.Dump(PeerGraph)}
+        if *verbose { log.Println("PeerGraph before update = ", PeerGraph) }
+        PeerGraph[inPeer.ThisPeer.Addr()] = inPeer
+        for _, neighbor := range inPeer.Neighbors {
+            profile := PeerGraph[neighbor.Addr()]
+            profile.Neighbors = append(profile.Neighbors, inPeer.ThisPeer)
+            PeerGraph[neighbor.Addr()] = profile
+        }
+        if *verbose { log.Println("PeerGraph after update = ", PeerGraph) ; spew.Dump(PeerGraph)}
     graphMutex.Unlock()
     return nil
 }
