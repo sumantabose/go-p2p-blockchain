@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 7 Sept 2018
+Written by Sumanta Bose, 10 Sept 2018
 
 */
 
@@ -32,21 +32,16 @@ type Peer struct {
     PeerAddress string `json:"PeerAddress"`
 }
 
-type PeerLinks struct { // connections of one peer
-    peer Peer `json:"peer"` // any node
-    links []Peer `json:"links"` // edges to that node
+type PeerProfile struct { // connections of one peer
+    ThisPeer Peer `json:"ThisPeer"` // any node
+    Neighbors []Peer `json:"Neighbors"` // edges to that node
+    Status bool `json:"Status"` // Status: Alive or Dead
+    Connected bool `json:"Connected"` // If a node is connected or not [To be used later]
 }
 
-type PeerGraph struct { // undirected p2p graph
-    peers []*Peer `json:"peers"` // nodes
-    links map[Peer][]*Peer `json:"links"` // edges
-}
-
-var peerGraph PeerGraph
-var thisPeer PeerLinks
+var peerProfile PeerProfile // used to enroll THIS peer | connectP2PNet() & enrollP2PNet)()
+var PeerGraph = make(map[string]PeerProfile) // Key = Node.PeerAddress; Value.Neighbors = Edges
 var graphMutex sync.RWMutex
-
-/////
 
 ///// LIST OF FUNCTIONS
 
@@ -65,11 +60,10 @@ func init() {
 func main() {
 	queryP2PList()
 	connectP2PNet()
-	joinP2PNet()
+	enrollP2PNet()
 	queryP2PList()
 	select{}
 }
-
 
 func queryP2PList() { // Query the list of peers in the P2P Network from the Bootstrapper
 	log.Println("Querying list of peers")
@@ -87,45 +81,29 @@ func queryP2PList() { // Query the list of peers in the P2P Network from the Boo
 		return
 	}
 
-	graphMutex.Lock()
-		json.Unmarshal(responseData, &peerGraph)
-	graphMutex.Unlock()
 	graphMutex.RLock()
-		spew.Dump(peerGraph)
+		json.Unmarshal(responseData, &PeerGraph)
+		log.Println(PeerGraph)
+		spew.Dump(PeerGraph)
 	graphMutex.RUnlock()
 }
 
-func joinP2PNet() { // Join the P2P Network by adding THIS peer's address to list of peers with Bootstrapper
-	log.Println("Joining P2P network")
+func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Bootstrapper
+	log.Println("Enrolling in P2P network")
 
-	log.Println(thisPeer)
-
-	jsonValue, err := json.Marshal(thisPeer)
+	jsonValue, err := json.Marshal(peerProfile)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	log.Println(jsonValue)
-
-	url := "http://localhost:" + bootstrapperPort + "/join-p2p-net"
-	// response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return
-	// }
-	// defer response.Body.Close()
-
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
-    req.Header.Set("Content-Type", "application/json")
-
-    client := &http.Client{}
-    response, err := client.Do(req)
-    if err != nil {
-        log.Println(err)
-        return
-    }
-    defer response.Body.Close()
+	url := "http://localhost:" + bootstrapperPort + "/enroll-p2p-net"
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer response.Body.Close()
 
     log.Println("response Status:", response.Status)
     log.Println("response Headers:", response.Header)
@@ -138,6 +116,30 @@ func joinP2PNet() { // Join the P2P Network by adding THIS peer's address to lis
 }
 
 ///// LIST OF HELPER FUNCTIONS
+
+func connectP2PNet() {
+	peerProfile.ThisPeer = Peer {PeerAddress : genRandString(15)}
+
+	if len(PeerGraph) == 0 { // first node in the network
+		// do nothing
+	} else {
+		log.Println("Connecting to P2P network")
+
+		log.Println("len(PeerGraph) = ", len(PeerGraph))
+		// make connection with peers[choice]
+
+		choice := genRandInt(len(PeerGraph))
+		log.Println("choice = ", choice)
+		peers := make([]string, 0, len(PeerGraph))
+		for p, _ := range PeerGraph {
+		    peers = append(peers, p)
+		}
+		peerProfile.Neighbors = append(peerProfile.Neighbors, Peer {PeerAddress : peers[choice]})
+		log.Println(peers[choice])
+	}
+}
+
+///// LIST OF MISC FUNCTIONS
 
 func genRandString(n int) string { // generate Random String of length 'n'
     var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -156,26 +158,3 @@ func genRandInt(n int) int {
    	val := myRand.Intn(n)
    	return val
 }
-
-/////
-
-
-func connectP2PNet() {
-
-	thisPeer.peer = Peer {PeerAddress : genRandString(15)}
-	if len(peerGraph.peers) == 0 { // first node
-		thisPeer.links = append(thisPeer.links, Peer {PeerAddress : "NULL"})
-	} else {
-		choice := genRandInt(len(peerGraph.peers))
-		thisPeer.links = append(thisPeer.links, *peerGraph.peers[choice])
-	}
-
-	log.Println(thisPeer)
-}
-
-
-
-
-
-
-
