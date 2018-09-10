@@ -12,7 +12,6 @@ import (
     "time"
     "sync"
     "net/http"
-    "math/rand"
     "encoding/json"
 
     "github.com/gorilla/mux"
@@ -147,8 +146,13 @@ func updatePeerGraph(inPeer PeerProfile) error {
         log.Println(PeerGraph[neighbor.Addr()].Neighbors)
 
         //p := Peer {PeerAddress : genRandString(15)}
-        //PeerGraph[neighbor.Addr()].Neighbors = append(PeerGraph[neighbor.Addr()].Neighbors, p)
+        //PeerGraph[neighbor.Addr()].Neighbors = append(PeerGraph[neighbor.Addr()].Neighbors, inPeer.ThisPeer)
 
+        profile := PeerGraph[neighbor.Addr()]
+        profile.Neighbors = append(profile.Neighbors, inPeer.ThisPeer)
+        PeerGraph[neighbor.Addr()] = profile
+
+        log.Println(profile)
         log.Println(neighbor)
     }
 
@@ -157,16 +161,5 @@ func updatePeerGraph(inPeer PeerProfile) error {
     return nil
 }
 
-
-func genRandString(n int) string { // generate Random String of length 'n'
-    var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    val := make([]rune, n)
-    for i := range val {
-        myRandSource := rand.NewSource(time.Now().UnixNano())
-        myRand := rand.New(myRandSource)
-        val[i] = letterRunes[myRand.Intn(len(letterRunes))]
-    }
-    return string(val)
-}
 
 
