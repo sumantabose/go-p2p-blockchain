@@ -1,8 +1,5 @@
-# Node Discovery v1.1
+# Node Discovery v2.0
 
-### Features
+### Issue: cannot assign to struct field in map
 
-For basic features, see [Node Discovery v1](https://github.com/sumantabose/go-p2p-blockchain/tree/master/node-discovery/v1).
-
-### Updates
-
+Cannot assign to struct field in map. Line 150 in bootstrapper.go
