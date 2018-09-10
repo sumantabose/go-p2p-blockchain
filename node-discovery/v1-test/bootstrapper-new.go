@@ -28,8 +28,8 @@ type Peer struct {
 }
 
 type PeerProfile struct {
-    thisPeer Peer `json:"thisPeer"`
-    status bool `json:"status"`
+    ThisPeer Peer `json:"ThisPeer"`
+    Status bool `json:"Status"`
 }
 
 var ListOfPeers []Peer
@@ -95,8 +95,10 @@ func handleJoin(w http.ResponseWriter, r *http.Request) {
     }
     defer r.Body.Close()
 
-    ListOfPeers = append(ListOfPeers, peer.thisPeer)
-    log.Println("Join request from:", peer, "successful")
+    log.Println(peer)
+
+    ListOfPeers = append(ListOfPeers, peer.ThisPeer)
+    log.Println("Join request from:", peer.ThisPeer, "successful")
     respondWithJSON(w, r, http.StatusCreated, peer)
 }
 

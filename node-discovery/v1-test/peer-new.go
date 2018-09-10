@@ -34,8 +34,8 @@ type Peer struct {
 // var thisPeer Peer
 
 type PeerProfile struct {
-    thisPeer Peer `json:"thisPeer"`
-    status bool `json:"status"`
+    ThisPeer Peer `json:"ThisPeer"`
+    Status bool `json:"Status"`
 }
 
 var peer PeerProfile
@@ -59,8 +59,8 @@ func init() {
 
 func main() {
 	peer = PeerProfile {
-		thisPeer : Peer {PeerAddress : genRandString(15)},
-		status : true,
+		ThisPeer : Peer {PeerAddress : genRandString(15)},
+		Status : true,
 	}
 	log.Println(peer)
 	queryP2PList()
