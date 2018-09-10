@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 10 Sept 2018
+Written by Sumanta Bose, 11 Sept 2018
 
 */
 
@@ -11,6 +11,7 @@ import (
     "log"
     "time"
     "sync"
+    "flag"
     "net/http"
     "encoding/json"
 
@@ -41,11 +42,14 @@ type PeerProfile struct { // connections of one peer
 
 var PeerGraph = make(map[string]PeerProfile) // Key = Node.PeerAddress; Value.Neighbors = Edges
 var graphMutex sync.RWMutex
+var verbose *bool
 
 ///// LIST OF FUNCTIONS
 
 func init() {
     log.SetFlags(log.Lshortfile)
+    verbose = flag.Bool("v", false, "enable verbose")
+    flag.Parse()
 }
 
 func main() {
@@ -87,9 +91,7 @@ func handleQuery(w http.ResponseWriter, r *http.Request) {
         return
     }
     io.WriteString(w, string(bytes))
-    log.Println(PeerGraph)
-    log.Println(bytes)
-    spew.Dump(bytes)  
+    if *verbose { log.Println("PeerGraph = ", PeerGraph) ; spew.Dump(PeerGraph) }
 }
 
 func handleEnroll(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +108,6 @@ func handleEnroll(w http.ResponseWriter, r *http.Request) {
     defer r.Body.Close()
 
     _ = updatePeerGraph(incomingPeer)
-    //ListOfPeers = append(ListOfPeers, peer.ThisPeer)
     log.Println("Enroll request from:", incomingPeer.ThisPeer, "successful")
     respondWithJSON(w, r, http.StatusCreated, incomingPeer)
 }
@@ -124,42 +125,21 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
     w.Write(response)
 }
 
-
 ///// LIST OF HELPER FUNCTIONS
 
 func updatePeerGraph(inPeer PeerProfile) error {
-
-    log.Println(inPeer)
-    spew.Dump(inPeer)
-
-    log.Println(PeerGraph)
+    if *verbose { log.Println("incomingPeer = ", inPeer) ; spew.Dump(PeerGraph) }
     
-    // Add peer to PeerGraph
+    // Update PeerGraph
     graphMutex.Lock()
+    if *verbose { log.Println("PeerGraph before update = ", PeerGraph) }
     PeerGraph[inPeer.ThisPeer.Addr()] = inPeer
-
     for _, neighbor := range inPeer.Neighbors {
-        //n := neighbor.Str()
-        //PeerGraph[n].Neighbors = append(PeerGraph[n].Neighbors, inPeer.ThisPeer)
-        log.Printf("%T", neighbor)
-        log.Println(PeerGraph[neighbor.Addr()])
-        log.Println(PeerGraph[neighbor.Addr()].Neighbors)
-
-        //p := Peer {PeerAddress : genRandString(15)}
-        //PeerGraph[neighbor.Addr()].Neighbors = append(PeerGraph[neighbor.Addr()].Neighbors, inPeer.ThisPeer)
-
         profile := PeerGraph[neighbor.Addr()]
         profile.Neighbors = append(profile.Neighbors, inPeer.ThisPeer)
         PeerGraph[neighbor.Addr()] = profile
-
-        log.Println(profile)
-        log.Println(neighbor)
     }
-
-    log.Println(PeerGraph)
+    if *verbose { log.Println("PeerGraph after update = ", PeerGraph) ; spew.Dump(PeerGraph)}
     graphMutex.Unlock()
     return nil
 }
-
-
-
