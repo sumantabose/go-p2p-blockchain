@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 10 Sept 2018
+Written by Sumanta Bose, 11 Sept 2018
 
 */
 
@@ -11,6 +11,7 @@ import (
     "log"
     "sync"
     "time"
+    "flag"
     "bytes"
     "syscall"
     "net/http"
@@ -42,6 +43,7 @@ type PeerProfile struct { // connections of one peer
 var peerProfile PeerProfile // used to enroll THIS peer | connectP2PNet() & enrollP2PNet)()
 var PeerGraph = make(map[string]PeerProfile) // Key = Node.PeerAddress; Value.Neighbors = Edges
 var graphMutex sync.RWMutex
+var verbose *bool
 
 ///// LIST OF FUNCTIONS
 
@@ -55,6 +57,8 @@ func init() {
         //ExitProtocol()
         os.Exit(1)
     }()
+    verbose = flag.Bool("v", false, "enable verbose")
+    flag.Parse()
 }
 
 func main() {
@@ -83,8 +87,7 @@ func queryP2PList() { // Query the list of peers in the P2P Network from the Boo
 
 	graphMutex.RLock()
 		json.Unmarshal(responseData, &PeerGraph)
-		log.Println(PeerGraph)
-		spew.Dump(PeerGraph)
+		if *verbose { log.Println("PeerGraph = ", PeerGraph) ; spew.Dump(PeerGraph) }
 	graphMutex.RUnlock()
 }
 
@@ -105,8 +108,8 @@ func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Boot
 	}
 	defer response.Body.Close()
 
-    log.Println("response Status:", response.Status)
-    log.Println("response Headers:", response.Header)
+    if *verbose { log.Println("response Status:", response.Status) }
+    if *verbose { log.Println("response Headers:", response.Header) }
     body, err := ioutil.ReadAll(response.Body)
     if err != nil {
         log.Println(err)
@@ -125,7 +128,7 @@ func connectP2PNet() {
 	} else {
 		log.Println("Connecting to P2P network")
 
-		log.Println("len(PeerGraph) = ", len(PeerGraph))
+		if *verbose { log.Println("len(PeerGraph) = ", len(PeerGraph)) }
 		// make connection with peers[choice]
 
 		choice := genRandInt(len(PeerGraph))
@@ -135,7 +138,7 @@ func connectP2PNet() {
 		    peers = append(peers, p)
 		}
 		peerProfile.Neighbors = append(peerProfile.Neighbors, Peer {PeerAddress : peers[choice]})
-		log.Println(peers[choice])
+		if *verbose { log.Println("peers[choice] = ", peers[choice]) }
 	}
 }
 
