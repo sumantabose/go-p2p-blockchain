@@ -7,3 +7,7 @@ For history of features, see [Node Discovery](https://github.com/sumantabose/go-
 ### Updates in v2.1
 
 The `Peer` asks for `PeerPort` to the `Bootstrapper`, which is used to create the `PeerProfile` and later used to update the `PeerGraph`.
+
+### ToDo
+
+Error Handling and Exceptions
