@@ -10,4 +10,5 @@ The `Peer` asks for `PeerPort` to the `Bootstrapper`, which is used to create th
 
 ### ToDo
 
-Error Handling and Exceptions
+* Error Handling and Exceptions
+* Race condition in assigning `PeerPort` over the network
