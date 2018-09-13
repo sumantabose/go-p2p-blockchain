@@ -37,6 +37,7 @@ type Peer struct {
 
 type PeerProfile struct { // connections of one peer
     ThisPeer Peer `json:"ThisPeer"` // any node
+    PeerPort int `json:"PeerPort"` // port of peer
     Neighbors []Peer `json:"Neighbors"` // edges to that node
     Status bool `json:"Status"` // Status: Alive or Dead
     Connected bool `json:"Connected"` // If a node is connected or not [To be used later]
@@ -64,12 +65,34 @@ func init() {
 }
 
 func main() {
+	requestPort()
 	queryP2PList()
 	connectP2PNet()
 	enrollP2PNet()
 	queryP2PList()
 	select{}
 }
+
+func requestPort() { // Requesting PeerPort
+	log.Println("Requesting PeerPort")
+
+	response, err := http.Get("http://localhost:" + bootstrapperPort + "/port-request")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer response.Body.Close()
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	json.Unmarshal(responseData, &peerProfile.PeerPort)
+	if *verbose { log.Println("PeerPort = ", peerProfile.PeerPort) }
+}
+
 
 func queryP2PList() { // Query the list of peers in the P2P Network from the Bootstrapper
 	log.Println("Querying list of peers")
