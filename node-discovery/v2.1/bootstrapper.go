@@ -132,11 +132,7 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 
 func handlePortReq(w http.ResponseWriter, r *http.Request) {
     log.Println("handlePortReq() API called")
-    for _, peerProfile := range PeerGraph {
-        if MaxPeerPort < peerProfile.PeerPort + 1 {
-            MaxPeerPort = MaxPeerPort + 1
-        }
-    }
+    MaxPeerPort = MaxPeerPort + 1
     bytes, err := json.Marshal(MaxPeerPort)
     if err != nil {
         log.Println(err)
