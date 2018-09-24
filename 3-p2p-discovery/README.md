@@ -1,10 +1,8 @@
-# Peer-2-Peer Blockchain Network, MUX Server and Persistance
+# Peer-2-Peer Blockchain Network, MUX Server, Persistance and Node Discovery
 
 ### Getting started
 
-Here we have improved the `server-mux` to added persistence. Previously, for simplicity, we shut down all the nodes if you kill one of them. Here we leave all other nodes running even if one closes.
+* Step 1: `go run bootstrapper/bootstrapper.go` (This starts the bootstrapper server to enable node-discovery)
+* Step 2: `go run *.go` or `bash run-node.sh` (This starts a node connecting to the existing network, if any)
 
-
-For the 1st node, `go run defs.go mux.go p2p.go blockchain.go main.go -l 6000 -secio` where you can replace 6000 by your prefered port number. Follow the instructions in the terminal to connect subsequent nodes.
-
-TODO: If one node dies, it should be able to relay the info in its Peer Store to its connected nodes so they can connect to each other.
+ToDo: If one node dies, it should be able to relay the info to the bootstrapper so the rest of the nodes in the network are updates and the connections updated accordingly.
