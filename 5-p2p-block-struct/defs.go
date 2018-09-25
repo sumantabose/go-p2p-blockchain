@@ -23,12 +23,39 @@ import (
 
 // Raw Material Transaction (Type 1)
 type RawMaterialTransaction struct {
-	Name string
+	SerialNo int
+	ProductCode string
+	ProductName string
+	ProductBatchNo string
+	Quantity int
+	RawMaterialBatchNo string
+	RawMaterialsID string
+	RawMaterialName string
+	RawMaterialQuantity float32
+	RawMaterialMeasurementUnit string
 }
 
 // Delivery Transaction (Type 2)
 type DeliveryTransaction struct {
-	Age int
+	SerialNo int
+	RecGenerator string
+	ShipmentID string
+	Timestamp string	
+	Longitude string
+	Latitude string
+	ShippedFromCompID string
+	ShippedToCompID string
+	LocationID string
+	DeliveryStatus string 	
+	DeliveryType string
+	ProductCode string
+	ProductName string
+	ProductBatchNo string
+	ProductBatchQuantity int
+	DocumentURL string
+	DocumentType string
+	DocumentHash string
+	DocumentSign string
 }
 
 // Block represents each 'item' in the blockchain
