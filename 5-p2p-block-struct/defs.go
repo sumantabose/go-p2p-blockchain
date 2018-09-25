@@ -33,14 +33,14 @@ type DeliveryTransaction struct {
 
 // Block represents each 'item' in the blockchain
 type Block struct {
-	Index     int
-	Timestamp string
-	TxnType int
-	TxnPayload interface{}
-	Comment	string
-	Proposer string
-	PrevHash  string
-	Hash	string
+	Index		int
+	Timestamp	string
+	TxnType		int
+	TxnPayload	interface{}
+	Comment		string
+	Proposer	string
+	PrevHash 	string
+	ThisHash	string
 }
 
 // Blockchain is a series of validated Blocks

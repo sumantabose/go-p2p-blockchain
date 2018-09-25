@@ -18,12 +18,12 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 		return false
 	}
 
-	if oldBlock.Hash != newBlock.PrevHash {
+	if oldBlock.ThisHash != newBlock.PrevHash {
 		log.Println("BLOCKCHAIN ERROR: Hash Inconsistent")
 		return false
 	}
 
-	if calculateHash(newBlock) != newBlock.Hash {
+	if calculateHash(newBlock) != newBlock.ThisHash {
 		log.Println("BLOCKCHAIN ERROR: Hash Mismatch")
 		return false
 	}
@@ -56,14 +56,14 @@ func generateBlock(oldBlock Block, comment string, txnPayload interface{}, txnTy
 	newBlock.TxnType = txnType
 	newBlock.TxnPayload = txnPayload
 
-	newBlock.PrevHash = oldBlock.Hash
-	newBlock.Hash = calculateHash(newBlock)
+	newBlock.PrevHash = oldBlock.ThisHash
+	newBlock.ThisHash = calculateHash(newBlock)
 
 	return newBlock
 }
 
 func generateGenesisBlock() Block {
 	genesisBlock := Block{0, time.Now().String(), 0, "", "Genesis Block", thisPeerFullAddr, "BIG-BANG!", ""}
-	genesisBlock.Hash = calculateHash(genesisBlock)
+	genesisBlock.ThisHash = calculateHash(genesisBlock)
 	return genesisBlock
 }
