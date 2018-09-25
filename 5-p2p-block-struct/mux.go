@@ -98,7 +98,7 @@ func handleRawMaterialTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	mutex.Lock()
-	newBlock := generateBlock(Blockchain[len(Blockchain)-1], "", rmTxn, 1)
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], "Raw Material Transaction (Type 1)", rmTxn, 1)
 	mutex.Unlock()
 
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
@@ -124,7 +124,7 @@ func handleDeliveryTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	mutex.Lock()
-	newBlock := generateBlock(Blockchain[len(Blockchain)-1], "", delTxn, 2)
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], "Delivery Transaction (Type 2)", delTxn, 2)
 	mutex.Unlock()
 
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
