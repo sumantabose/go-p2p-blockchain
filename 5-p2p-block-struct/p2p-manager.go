@@ -84,7 +84,6 @@ func p2pInit() {
 	}()
 }
 
-
 func requestPort() { // Requesting PeerPort
 	log.Println("Requesting PeerPort from Bootstrapper")
 
@@ -104,7 +103,6 @@ func requestPort() { // Requesting PeerPort
 	json.Unmarshal(responseData, &peerProfile.PeerPort)
 	if *verbose { log.Println("PeerPort = ", peerProfile.PeerPort) }
 }
-
 
 func queryP2PGraph() { // Query the graph of peers in the P2P Network from the Bootstrapper
 	log.Println("Querying graph of peers from Bootstrapper")
@@ -127,7 +125,6 @@ func queryP2PGraph() { // Query the graph of peers in the P2P Network from the B
 		if *verbose { log.Println("PeerGraph = ", PeerGraph) ; spew.Dump(PeerGraph) }
 	graphMutex.RUnlock()
 }
-
 
 func connectP2PNet() {
 	peerProfile.ThisPeer = Peer {PeerAddress : thisPeerFullAddr}
@@ -188,7 +185,6 @@ func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Boot
     }
     log.Println("response Body:", string(body))
 }
-
 
 func connect2Target(newTarget string) {
 	log.Println("Attempting to connect to", newTarget)
@@ -251,7 +247,6 @@ func connect2Target(newTarget string) {
     }()
 	//select {} // hang forever
 }
-
 
 // makeBasicHost creates a LibP2P host with a random peer ID listening on the
 // given multiaddress. It will use secio if secio is true.

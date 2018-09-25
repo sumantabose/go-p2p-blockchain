@@ -52,10 +52,6 @@ type StdInput struct {
 	Comment string
 }
 
-type newTarget_json struct {
-	NewTarget string
-}
-
 var mutex = &sync.Mutex{}
 
 ////////  HELPER FUNCTIONS

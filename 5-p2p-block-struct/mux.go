@@ -11,6 +11,9 @@ import (
 	"strconv"
 )
 
+type NewTarget struct { // Used to force a P2P connection through MUX [May dissable this feature later]
+	Target string
+}
 
 // web server
 func muxServer() error {
@@ -134,9 +137,9 @@ func handleDeliveryTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, r, http.StatusCreated, newBlock)
 }
 
-func handleConnect(w http.ResponseWriter, r *http.Request) {
+func handleConnect(w http.ResponseWriter, r *http.Request) { // May dissable this feature later
 	w.Header().Set("Content-Type", "application/json")
-	var m newTarget_json
+	var m NewTarget
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&m); err != nil {
@@ -146,9 +149,9 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	log.Println("mux NewTarget =", m.NewTarget)
-	connect2Target(m.NewTarget)
-	respondWithJSON(w, r, http.StatusCreated, m.NewTarget)
+	log.Println("MUX NewTarget =", m.Target)
+	connect2Target(m.Target)
+	respondWithJSON(w, r, http.StatusCreated, m.Target)
 }
 
 func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
