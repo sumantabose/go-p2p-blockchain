@@ -12,8 +12,6 @@ import (
 
 ///// FLAG & VARIABLES
 
-	//var listenF *int
-	//var target *string
 	var secio *bool
 	var verbose *bool
 	var seed *int64
@@ -40,8 +38,9 @@ type Block struct {
 	TxnType int
 	TxnPayload interface{}
 	Comment	string
-	Hash	string
+	Proposer string
 	PrevHash  string
+	Hash	string
 }
 
 // Blockchain is a series of validated Blocks
