@@ -51,6 +51,7 @@ func generateBlock(oldBlock Block, comment string, txnPayload interface{}, txnTy
 	newBlock.Index = oldBlock.Index + 1
 	newBlock.Timestamp = t.String()
 	newBlock.Comment = comment
+	newBlock.Proposer = thisPeerFullAddr
 
 	newBlock.TxnType = txnType
 	newBlock.TxnPayload = txnPayload

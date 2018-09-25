@@ -111,7 +111,7 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 		}
 
 		if sendData != "\n" {
-			sendData = strings.Replace(sendData, "\n", "", -1)
+			sendData = strings.Replace(sendData, "\n", "", -1) + " (From terminal)"
 			newBlock := generateBlock(Blockchain[len(Blockchain)-1], sendData, "", 0)
 
 			if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
