@@ -44,7 +44,6 @@ func calculateHash(b Block) string {
 
 // create a new block using previous block's hash
 func generateBlock(oldBlock Block, comment string, txnPayload interface{}, txnType int) Block {
-
 	var newBlock Block
 
 	t := time.Now()
@@ -60,4 +59,10 @@ func generateBlock(oldBlock Block, comment string, txnPayload interface{}, txnTy
 	newBlock.Hash = calculateHash(newBlock)
 
 	return newBlock
+}
+
+func generateGenesisBlock() Block {
+	genesisBlock := Block{0, time.Now().String(), 0, "", "Genesis Block", thisPeerFullAddr, "BIG-BANG!", ""}
+	genesisBlock.Hash = calculateHash(genesisBlock)
+	return genesisBlock
 }
