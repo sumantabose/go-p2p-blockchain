@@ -1,0 +1,1 @@
+go run bootstrapper/bootstrapper.go -v
