@@ -136,7 +136,7 @@ func connectP2PNet() {
 		log.Println("I'm first peer. Creating Genesis Block.")
 		t := time.Now()
 		genesisBlock := Block{}
-		genesisBlock = Block{0, t.String(), 0, "", "", calculateHash(genesisBlock), ""}
+		genesisBlock = Block{0, t.String(), 0, "", "Genesis Block", calculateHash(genesisBlock), "BIG-BANG!"}
 
 		Blockchain = append(Blockchain, genesisBlock)
 		save2File(Blockchain)

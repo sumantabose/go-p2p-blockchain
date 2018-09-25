@@ -26,7 +26,7 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 
 // SHA256 hashing
 func calculateHash(block Block) string {
-	record := strconv.Itoa(block.Index) + block.Timestamp + block.Dummy + block.PrevHash
+	record := strconv.Itoa(block.Index) + block.Timestamp + block.Comment + block.PrevHash
 	h := sha256.New()
 	h.Write([]byte(record))
 	hashed := h.Sum(nil)
@@ -34,7 +34,7 @@ func calculateHash(block Block) string {
 }
 
 // create a new block using previous block's hash
-func generateBlock(oldBlock Block, dummy string, txnPayload interface{}, txnType int) Block {
+func generateBlock(oldBlock Block, comment string, txnPayload interface{}, txnType int) Block {
 
 	var newBlock Block
 
@@ -42,7 +42,7 @@ func generateBlock(oldBlock Block, dummy string, txnPayload interface{}, txnType
 
 	newBlock.Index = oldBlock.Index + 1
 	newBlock.Timestamp = t.String()
-	newBlock.Dummy = dummy
+	newBlock.Comment = comment
 
 	newBlock.TxnType = txnType
 	newBlock.TxnPayload = txnPayload

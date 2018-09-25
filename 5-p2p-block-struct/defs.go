@@ -39,7 +39,7 @@ type Block struct {
 	Timestamp string
 	TxnType int
 	TxnPayload interface{}
-	Dummy	string
+	Comment	string
 	Hash	string
 	PrevHash  string
 }
@@ -47,9 +47,9 @@ type Block struct {
 // Blockchain is a series of validated Blocks
 var Blockchain []Block
 
-// Standard Input takes incoming string from terminal for dummy block
+// Standard Input takes incoming string from terminal for `comment` in block (Type 0)
 type StdInput struct {
-	Dummy string
+	Comment string
 }
 
 type newTarget_json struct {
@@ -62,8 +62,6 @@ var mutex = &sync.Mutex{}
 
 func readFlags() {
 	// Parse options from the command line
-	//listenF = flag.Int("l", 0, "wait for incoming connections")
-	//target = flag.String("d", "", "target peer to dial")
 	secio = flag.Bool("secio", true, "enable secio")	
 	verbose = flag.Bool("v", false, "enable verbose")
 	seed = flag.Int64("seed", 0, "set random seed for id generation")

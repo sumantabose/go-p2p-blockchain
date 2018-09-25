@@ -36,9 +36,9 @@ func muxServer() error {
 func makeMuxRouter() http.Handler {
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
-	muxRouter.HandleFunc("/terminal/", handleTerminalWriteBlock).Methods("POST")
-	muxRouter.HandleFunc("/raw/", handleRawMaterialTxnWriteBlock).Methods("POST")
-	muxRouter.HandleFunc("/delivery/", handleDeliveryTxnWriteBlock).Methods("POST")
+	muxRouter.HandleFunc("/raw", handleRawMaterialTxnWriteBlock).Methods("POST")
+	muxRouter.HandleFunc("/delivery", handleDeliveryTxnWriteBlock).Methods("POST")
+	muxRouter.HandleFunc("/comment", handleCommentWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/connect", handleConnect).Methods("POST")
 	return muxRouter
 }
@@ -56,8 +56,8 @@ func handleGetBlockchain(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, string(bytes))
 }
 
-// takes JSON payload as an input for heart rate (BPM)
-func handleTerminalWriteBlock(w http.ResponseWriter, r *http.Request) {
+// takes JSON payload as an input for comment
+func handleCommentWriteBlock(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var t StdInput
 
@@ -69,7 +69,7 @@ func handleTerminalWriteBlock(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	mutex.Lock()
-	newBlock := generateBlock(Blockchain[len(Blockchain)-1], t.Dummy, "", 0)
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], t.Comment, "", 0)
 	mutex.Unlock()
 
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
