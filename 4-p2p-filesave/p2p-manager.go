@@ -139,6 +139,7 @@ func connectP2PNet() {
 		genesisBlock = Block{0, t.String(), 0, calculateHash(genesisBlock), ""}
 
 		Blockchain = append(Blockchain, genesisBlock)
+		save2File(Blockchain)
 		spew.Dump(Blockchain)
 		log.Println("I'm first peer. Listening for connections.")
 	} else {

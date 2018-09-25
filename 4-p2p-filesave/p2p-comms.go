@@ -11,6 +11,8 @@ import (
 	"time"
 	"os/signal"
     "syscall"
+    "runtime"
+	"encoding/gob"
 
 	"github.com/davecgh/go-spew/spew"
 	net "github.com/libp2p/go-libp2p-net"
@@ -60,8 +62,11 @@ func p2pReadData(rw *bufio.ReadWriter) {
 			}
 
 			mutex.Lock()
-			if len(chain) > len(Blockchain) {
+			if len(chain) >= len(Blockchain) {
 				Blockchain = chain
+
+				save2File(Blockchain)
+
 				bytes, err := json.MarshalIndent(Blockchain, "", "  ")
 				if err != nil {
 
@@ -133,3 +138,36 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 		}
 	}
 }
+
+
+func save2File(blockchain []Block) {
+	gobCheck(writeGob(blockchain, len(blockchain)))
+}
+
+func writeGob(object interface{}, fileNoCount int) error {
+
+	dataDirFull := *dataDir + strconv.Itoa(peerProfile.PeerPort)
+
+    if _, err := os.Stat(dataDirFull); os.IsNotExist(err) { // if dataDirFull does not exist
+    	log.Println("`", dataDirFull, "` does not exist. Creating directory.")
+    	os.Mkdir(dataDirFull, 0755) // https://stackoverflow.com/questions/14249467/os-mkdir-and-os-mkdirall-permission-value
+	}
+
+    filePath := dataDirFull + "/blockchain-" + strconv.Itoa(fileNoCount) + ".gob"
+    file, err := os.Create(filePath)
+    if err == nil {
+        encoder := gob.NewEncoder(file)
+        encoder.Encode(object)
+    }
+    file.Close()
+    return err
+}
+
+func gobCheck(e error) { // Inspired from http://www.robotamer.com/code/go/gotamer/gob.html
+    if e != nil {
+        _, file, line, _ := runtime.Caller(1)
+        log.Println(line, "\t", file, "\n", e)
+        os.Exit(1)
+    }
+}
+

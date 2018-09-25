@@ -17,6 +17,7 @@ import (
 	var secio *bool
 	var verbose *bool
 	var seed *int64
+	var dataDir *string // data directory prefix where the gob files are stored
 
 	var ha host.Host
 
@@ -56,6 +57,7 @@ func readFlags() {
 	secio = flag.Bool("secio", true, "enable secio")	
 	verbose = flag.Bool("v", false, "enable verbose")
 	seed = flag.Int64("seed", 0, "set random seed for id generation")
+	dataDir = flag.String("data", "data", "pathname of data directory")
 	flag.Parse()
 }
 
