@@ -112,11 +112,12 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 
 		if sendData != "\n" {
 			sendData = strings.Replace(sendData, "\n", "", -1)
-			bpm, err := strconv.Atoi(sendData)
-			if err != nil {
-				log.Fatal(err)
-			}
-			newBlock := generateBlock(Blockchain[len(Blockchain)-1], bpm, "", 0)
+			// bpm, err := strconv.Atoi(sendData)
+			// if err != nil {
+			// 	log.Fatal(err)
+			// }
+			//input, err := strconv.Atoi(sendData)
+			newBlock := generateBlock(Blockchain[len(Blockchain)-1], sendData, "", 0)
 
 			if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
 				mutex.Lock()

@@ -36,7 +36,7 @@ func muxServer() error {
 func makeMuxRouter() http.Handler {
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
-	muxRouter.HandleFunc("/bpm/", handleBPMWriteBlock).Methods("POST")
+	muxRouter.HandleFunc("/terminal/", handleTerminalWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/raw/", handleRawMaterialTxnWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/delivery/", handleDeliveryTxnWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/connect", handleConnect).Methods("POST")
@@ -57,19 +57,19 @@ func handleGetBlockchain(w http.ResponseWriter, r *http.Request) {
 }
 
 // takes JSON payload as an input for heart rate (BPM)
-func handleBPMWriteBlock(w http.ResponseWriter, r *http.Request) {
+func handleTerminalWriteBlock(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var m Message
+	var t StdInput
 
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&m); err != nil {
+	if err := decoder.Decode(&t); err != nil {
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
 	}
 	defer r.Body.Close()
 
 	mutex.Lock()
-	newBlock := generateBlock(Blockchain[len(Blockchain)-1], m.BPM, "", 0)
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], t.Dummy, "", 0)
 	mutex.Unlock()
 
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
@@ -95,7 +95,7 @@ func handleRawMaterialTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	mutex.Lock()
-	newBlock := generateBlock(Blockchain[len(Blockchain)-1], 0, rmTxn, 1)
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], "", rmTxn, 1)
 	mutex.Unlock()
 
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
@@ -121,7 +121,7 @@ func handleDeliveryTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	mutex.Lock()
-	newBlock := generateBlock(Blockchain[len(Blockchain)-1], 0, delTxn, 2)
+	newBlock := generateBlock(Blockchain[len(Blockchain)-1], "", delTxn, 2)
 	mutex.Unlock()
 
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
