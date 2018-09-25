@@ -49,17 +49,26 @@ func calculateHashOld(block Block) string {
 func calculateHash(object interface{}, hashType string) string {
 	switch hashType {
 		case "md5", "MD5":
-	        hashByte := md5.Sum(structhash.Dump(object, 1))
-	        hashString := hex.EncodeToString((hashByte[:]))
-			return hashString
+			h := md5.New()
+	        byteObject := structhash.Dump(object, 1)
+	        h.Write(byteObject)
+	        hashed := h.Sum(nil)
+			return hex.EncodeToString(hashed)
 	    case "sha1", "SHA1":
-	        hashByte := sha1.Sum(structhash.Dump(object, 1))
-	        hashString := hex.EncodeToString((hashByte[:]))
-			return hashString
+	  //       hashByte := sha1.Sum(structhash.Dump(object, 1))
+	  //       hashString := hex.EncodeToString((hashByte[:]))
+			// return hashString
+			h := sha1.New()
+	        byteObject := structhash.Dump(object, 1)
+	        h.Write(byteObject)
+	        hashed := h.Sum(nil)
+			return hex.EncodeToString(hashed)
 	    case "sha256", "SHA256":
-	        hashByte := sha256.Sum256(structhash.Dump(object, 1))
-	        hashString := hex.EncodeToString((hashByte[:]))
-			return hashString
+			h := sha256.New()
+	        byteObject := structhash.Dump(object, 1)
+	        h.Write(byteObject)
+	        hashed := h.Sum(nil)
+			return hex.EncodeToString(hashed)
 	    default:
 	    	return "000" // return error in later iteration of code
 	}
