@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 )
 
 func init() { // Idea from https://appliedgo.net/networking/
@@ -11,14 +10,7 @@ func init() { // Idea from https://appliedgo.net/networking/
 }
 
 func main() {
-	t := time.Now()
-	genesisBlock := Block{}
-	genesisBlock = Block{0, t.String(), 0, calculateHash(genesisBlock), ""}
-
-	Blockchain = append(Blockchain, genesisBlock)
-
-	p2pInit()
-
+	p2pInit() // Initialize P2P Network from Bootstrapper
 	log.Fatal(muxServer()) // function is in mux.go
 }
 

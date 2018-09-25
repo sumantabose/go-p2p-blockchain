@@ -57,37 +57,21 @@ var graphMutex sync.RWMutex
 ///// LIST OF FUNCTIONS
 
 func p2pInit() {
-	// LibP2P code uses golog to log messages. They log with different
-	// string IDs (i.e. "swarm"). We can control the verbosity level for
-	// all loggers with:
+	// LibP2P code uses golog to log messages. They log with different string IDs (i.e. "swarm")
+	// We can control the verbosity level for all loggers with:
 	golog.SetAllLoggers(gologging.INFO) // Change to DEBUG for extra info
 
 	requestPort() // request THIS peer's port from bootstrapper
 	queryP2PGraph() // query graph of peers in the P2P Network
 
-	// if *listenF == 0 {
-	// 	log.Fatal("Please provide a port to bind on with -l")
-	// }
 	// Make a host that listens on the given multiaddress
 	makeBasicHost(peerProfile.PeerPort, *secio, *seed)
 	ha.SetStreamHandler("/p2p/1.0.0", handleStream)
-
-	// if *target == "" {
-	// 	log.Println("listening for connections")
-	// 	// Set a stream handler on host A. /p2p/1.0.0 is
-	// 	// a user-defined protocol name.
-	// } else {
-	// 	connect2Target(*target)
-	// }
 
 	log.Println("Peerstore().Peers() before connecting =", ha.Peerstore().Peers())
 	connectP2PNet()
 	enrollP2PNet()
 	log.Println("Peerstore().Peers() after connecting =", ha.Peerstore().Peers())
-
-	// for i, _ := range ha.Peerstore().Peers() {
-	// 	log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
-	// }
 
 	go func() {
 		for {
@@ -149,7 +133,13 @@ func connectP2PNet() {
 	peerProfile.ThisPeer = Peer {PeerAddress : thisPeerFullAddr}
 
 	if len(PeerGraph) == 0 { // first node in the network
-		// do nothing
+		log.Println("I'm first peer. Creating Genesis Block.")
+		t := time.Now()
+		genesisBlock := Block{}
+		genesisBlock = Block{0, t.String(), 0, calculateHash(genesisBlock), ""}
+
+		Blockchain = append(Blockchain, genesisBlock)
+		spew.Dump(Blockchain)
 		log.Println("I'm first peer. Listening for connections.")
 	} else {
 		log.Println("Connecting to P2P network")
@@ -277,8 +267,7 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) { //(host.Host, e
 	}
 	if *verbose { log.Printf("r = ", r) }
 
-	// Generate a key pair for this host. We will use it
-	// to obtain a valid host ID.
+	// Generate a key pair for this host. We will use it to obtain a valid host ID.
 	priv, _, err := crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, r)
 	if err != nil {
 		//return nil, err
@@ -314,11 +303,6 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) { //(host.Host, e
 	fullAddr := addr.Encapsulate(hostAddr)
 	log.Printf("My fullAddr = %s\n", fullAddr)
 	thisPeerFullAddr = fullAddr.String()
-	//if secio {
-	//	log.Printf("Now run \"go run *.go -l %d -d %s -secio\" on a different terminal\n", listenPort+1, fullAddr)
-	//} else {
-	//	log.Printf("Now run \"go run *.go -l %d -d %s\" on a different terminal\n", listenPort+1, fullAddr)
-	//}
 
 	//return basicHost, nil
 	ha = basicHost // ha defined in defs.go
