@@ -11,7 +11,6 @@ import (
 
 )
 
-
 ///// GLOBAL VARIABLES
 
 // Raw Material Transaction (Type 1)
@@ -91,8 +90,6 @@ func main() {
 	}
 }
 
-
-
 func Post(object interface{}, IP string, Port string, Tag string) {
 	log.Println("Posting")
 
@@ -120,5 +117,3 @@ func Post(object interface{}, IP string, Port string, Tag string) {
     }
     log.Println("response Body:", string(body))
 }
-
-
