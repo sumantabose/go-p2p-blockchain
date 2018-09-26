@@ -85,19 +85,21 @@ func p2pInit() {
 }
 
 func requestPort() { // Requesting PeerPort
-	log.Println("Requesting PeerPort from Bootstrapper")
+	log.Println("Requesting PeerPort from Bootstrapper http://" + *bootstrapperIP + ":" + bootstrapperPort)
 
 	response, err := http.Get("http://" + *bootstrapperIP + ":" + bootstrapperPort + "/port-request")
 	if err != nil {
 		log.Println(err)
-		return
+		log.Fatalln("PANIC: Unable to requestPort() from bootstrapper. Bootstrapper may be down.")
+		// return
 	}
 	defer response.Body.Close()
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Println(err)
-		return
+		log.Fatalln("PANIC: Unable to requestPort() from bootstrapper. Bootstrapper may be down.")
+		// return
 	}
 
 	json.Unmarshal(responseData, &peerProfile.PeerPort)
