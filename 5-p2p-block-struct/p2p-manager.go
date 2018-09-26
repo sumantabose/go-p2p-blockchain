@@ -164,7 +164,7 @@ func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Boot
 		return
 	}
 
-	url := "http://" + bootstrapperIP + ":" + *bootstrapperPort + "/enroll-p2p-net"
+	url := "http://" + *bootstrapperIP + ":" + bootstrapperPort + "/enroll-p2p-net"
 	response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		log.Println(err)
