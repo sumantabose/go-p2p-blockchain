@@ -29,7 +29,7 @@ type RawMaterialTransaction struct {
 	ProductName string
 	ProductBatchNo string
 	Quantity int
-	RawMaterial
+	RawMaterial RawMaterial
 }
 type RawMaterial struct {
 	RawMaterialBatchNo string
@@ -52,13 +52,13 @@ type DeliveryTransaction struct {
 	LocationID string
 	DeliveryStatus string 	
 	DeliveryType string
-	Product
-	Document
+	Product Product
+	Document Document
 }
 type Product struct {
 	ProductCode string
 	ProductName string
-	ProductBatch
+	ProductBatch ProductBatch
 }
 type ProductBatch struct {
 	ProductBatchNo string
