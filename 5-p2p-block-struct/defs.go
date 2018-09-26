@@ -75,7 +75,7 @@ type Document struct {
 type Block struct {
 	Index		int
 	Timestamp	string
-	TxnType		int
+	TxnType		int // 0 for StdInput, 1 for RawMaterialTransaction, 2 for DeliveryTransaction
 	TxnPayload	interface{}
 	Comment		string
 	Proposer	string
