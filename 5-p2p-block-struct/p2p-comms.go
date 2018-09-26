@@ -152,7 +152,26 @@ func writeGob() error {
     file, err := os.Create(filePath)
     if err == nil {
         encoder := gob.NewEncoder(file)
-        encoder.Encode(Blockchain)
+
+		// The problem is that in the old code, there was an error when executing
+		// encoder.Encode(Blockchain) but since we didn’t check for error, we didn’t realise that.
+		// The output is blank because Blockchain fails to get encoded properly.
+		// If we add error checking, we’d see something like:
+		// encode error:gob: type not registered for interface: main.<Type>
+
+		// If we add one line to our previous code before encoder.Encode(Blockchain) we could get the expected output,
+		// gob.Register(Type{})
+		// But what is this Type?
+
+		// gob.Register(??)
+		// READ: https://stackoverflow.com/questions/14121422/de-and-encode-interface-with-gob
+		// READ: https://play.golang.org/p/xt4zNyPZ2W
+
+		// ALTERNATE: Consider encoding and saving in JSON
+        err = encoder.Encode(Blockchain)
+        if err != nil {
+			log.Println("GOB encode error:", err)
+		}
     }
     file.Close()
     return err
