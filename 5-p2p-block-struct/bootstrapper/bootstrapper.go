@@ -14,6 +14,7 @@ import (
     "flag"
     "net/http"
     "encoding/json"
+    gonet "net"
 
     "github.com/gorilla/mux"
     "github.com/davecgh/go-spew/spew"
@@ -62,7 +63,7 @@ func main() {
 
 func launchMUXServer() error { // launch MUX server
     mux := makeMUXRouter()
-    log.Println("HTTP MUX server listening on port:", listenPort) // listenPort is a global const
+    log.Println("HTTP MUX server listening on " + GetMyIP() + ":" + listenPort) // listenPort is a global const
     s := &http.Server{
         Addr:           ":" + listenPort,
         Handler:        mux,
@@ -160,4 +161,17 @@ func updatePeerGraph(inPeer PeerProfile) error {
         if *verbose { log.Println("PeerGraph after update = ", PeerGraph) ; spew.Dump(PeerGraph)}
     graphMutex.Unlock()
     return nil
+}
+
+func  GetMyIP() string {
+    var MyIP string
+
+    conn, err := gonet.Dial("udp", "8.8.8.8:80")
+    if err != nil {
+       log.Fatalln(err)
+    } else {
+        localAddr := conn.LocalAddr().(*gonet.UDPAddr)
+        MyIP = localAddr.IP.String()
+    }
+    return MyIP
 }
