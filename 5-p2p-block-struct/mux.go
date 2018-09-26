@@ -40,7 +40,7 @@ func makeMuxRouter() http.Handler {
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
 	muxRouter.HandleFunc("/raw", handleRawMaterialTxnWriteBlock).Methods("POST")
-	muxRouter.HandleFunc("/delivery", handleDeliveryTxnWriteBlock).Methods("POST")
+	muxRouter.HandleFunc("/del", handleDeliveryTxnWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/comment", handleCommentWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/connect", handleConnect).Methods("POST")
 	return muxRouter
