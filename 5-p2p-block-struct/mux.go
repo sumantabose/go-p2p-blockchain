@@ -19,9 +19,9 @@ type NewTarget struct { // Used to force a P2P connection through MUX [May dissa
 func muxServer() error {
 	mux := makeMuxRouter()
 	//httpPort := os.Getenv("PORT")
-	log.Println("HTTP Server Listening on port :", peerProfile.PeerPort) // peerProfile.PeerPort in peer-manager.go
+	log.Println("HTTP Server Listening on port :", peerProfile.PeerPort+1500) // peerProfile.PeerPort in peer-manager.go
 	s := &http.Server{
-		Addr:           ":" + strconv.Itoa(peerProfile.PeerPort),
+		Addr:           ":" + strconv.Itoa(peerProfile.PeerPort+1500),
 		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
