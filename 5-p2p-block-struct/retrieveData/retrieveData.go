@@ -87,7 +87,7 @@ func init() { // Idea from https://appliedgo.net/networking/
 }
 
 func main() {
-	dataFile := "../data5000/blockchain-20.gob"
+	dataFile := "../data5000/blockchain-1.gob"
 	log.Println("Loading Blockchain from", dataFile)
 	gobCheck(readGob(&Blockchain, dataFile))
 	log.Println(Blockchain)
