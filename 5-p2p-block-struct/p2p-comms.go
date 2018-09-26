@@ -136,7 +136,7 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 }
 
 func save2File(blockchain []Block) {
-	gobCheck(writeGob(blockchain, len(blockchain)))
+	gobCheck(writeGob(blockchain, len(blockchain)-1))
 }
 
 func writeGob(object interface{}, fileNoCount int) error {
