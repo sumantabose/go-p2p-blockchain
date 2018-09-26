@@ -65,7 +65,7 @@ func p2pReadData(rw *bufio.ReadWriter) {
 			if len(chain) >= len(Blockchain) {
 				Blockchain = chain
 
-				save2File(Blockchain)
+				save2File()
 
 				bytes, err := json.MarshalIndent(Blockchain, "", "  ")
 				if err != nil {
@@ -135,11 +135,11 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 	}
 }
 
-func save2File(blockchain []Block) {
-	gobCheck(writeGob(blockchain, len(blockchain)-1))
+func save2File() {
+	gobCheck(writeGob())
 }
 
-func writeGob(object interface{}, fileNoCount int) error {
+func writeGob() error {
 
 	dataDirFull := *dataDir + strconv.Itoa(peerProfile.PeerPort)
 
@@ -148,11 +148,11 @@ func writeGob(object interface{}, fileNoCount int) error {
     	os.Mkdir(dataDirFull, 0755) // https://stackoverflow.com/questions/14249467/os-mkdir-and-os-mkdirall-permission-value
 	}
 
-    filePath := dataDirFull + "/blockchain-" + strconv.Itoa(fileNoCount) + ".gob"
+    filePath := dataDirFull + "/blockchain-" + strconv.Itoa(len(Blockchain)-1) + ".gob"
     file, err := os.Create(filePath)
     if err == nil {
         encoder := gob.NewEncoder(file)
-        encoder.Encode(object)
+        encoder.Encode(Blockchain)
     }
     file.Close()
     return err
