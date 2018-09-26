@@ -62,6 +62,7 @@ func p2pInit() {
 	golog.SetAllLoggers(gologging.INFO) // Change to DEBUG for extra info
 
 	requestPort() // request THIS peer's port from bootstrapper
+	if *verbose { log.Println("PeerIP = ", GetMyIP()) }
 	queryP2PGraph() // query graph of peers in the P2P Network
 
 	// Make a host that listens on the given multiaddress
