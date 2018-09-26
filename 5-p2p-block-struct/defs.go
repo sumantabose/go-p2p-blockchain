@@ -16,6 +16,7 @@ import (
 	var verbose *bool
 	var seed *int64
 	var dataDir *string // data directory prefix where the gob files are stored
+	var bootstrapperIP *string
 
 	var ha host.Host
 
@@ -100,6 +101,7 @@ func readFlags() {
 	verbose = flag.Bool("v", false, "enable verbose")
 	seed = flag.Int64("seed", 0, "set random seed for id generation")
 	dataDir = flag.String("data", "data", "pathname of data directory")
+	bootstrapperIP = flag.String("b", "localhost", "IP of bootstrapper")
 	flag.Parse()
 }
 
