@@ -87,7 +87,7 @@ func p2pInit() {
 func requestPort() { // Requesting PeerPort
 	log.Println("Requesting PeerPort from Bootstrapper")
 
-	response, err := http.Get("http://" + bootstrapperIP + ":" + bootstrapperPort + "/port-request")
+	response, err := http.Get("http://" + *bootstrapperIP + ":" + bootstrapperPort + "/port-request")
 	if err != nil {
 		log.Println(err)
 		return
@@ -107,7 +107,7 @@ func requestPort() { // Requesting PeerPort
 func queryP2PGraph() { // Query the graph of peers in the P2P Network from the Bootstrapper
 	log.Println("Querying graph of peers from Bootstrapper")
 	
-	response, err := http.Get("http://" + bootstrapperIP + ":" + bootstrapperPort + "/query-p2p-graph")
+	response, err := http.Get("http://" + *bootstrapperIP + ":" + bootstrapperPort + "/query-p2p-graph")
 	if err != nil {
 		log.Println(err)
 		return
@@ -164,7 +164,7 @@ func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Boot
 		return
 	}
 
-	url := "http://" + bootstrapperIP + ":" + bootstrapperPort + "/enroll-p2p-net"
+	url := "http://" + bootstrapperIP + ":" + *bootstrapperPort + "/enroll-p2p-net"
 	response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		log.Println(err)
