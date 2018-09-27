@@ -84,10 +84,13 @@ var Blockchain []Block
 
 func init() { // Idea from https://appliedgo.net/networking/
 	log.SetFlags(log.Lshortfile)
+	gob.Register(RawMaterialTransaction{})
+	gob.Register(DeliveryTransaction{})
+	gob.Register(map[string]interface{}{})
 }
 
 func main() {
-	dataFile := "../data5000/blockchain-0.gob"
+	dataFile := "../data5000/blockchain-4.gob"
 	log.Println("Loading Blockchain from", dataFile)
 	gobCheck(readGob(&Blockchain, dataFile))
 	log.Println(Blockchain)

@@ -4,6 +4,7 @@ import (
     "crypto/sha256"
 
 	"encoding/hex"
+	"encoding/gob"
 	"strconv"
 	"time"
 	"log"
@@ -66,4 +67,10 @@ func generateGenesisBlock() Block {
 	genesisBlock := Block{0, time.Now().String(), 0, "", "Genesis Block", thisPeerFullAddr, "BIG-BANG!", ""}
 	genesisBlock.ThisHash = calculateHash(genesisBlock)
 	return genesisBlock
+}
+
+func registerGOB() {
+	gob.Register(RawMaterialTransaction{})
+	gob.Register(DeliveryTransaction{})
+	gob.Register(map[string]interface{}{})
 }
