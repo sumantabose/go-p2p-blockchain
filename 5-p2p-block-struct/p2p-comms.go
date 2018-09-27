@@ -74,7 +74,13 @@ func p2pReadData(rw *bufio.ReadWriter) {
 				}
 				// Green console color: 	\x1b[32m
 				// Reset console color: 	\x1b[0m
-				fmt.Printf("\x1b[32m%s\x1b[0m> ", string(bytes))
+				// fmt.Printf("\x1b[32m%s\x1b[0m> ", string(bytes))
+				if len(Blockchain) > LastRcvdBlockchainLen {
+					// Green console color: 	\x1b[32m
+					// Reset console color: 	\x1b[0m
+					fmt.Printf("\x1b[32m%s\x1b[0m> ", string(bytes))
+					LastRcvdBlockchainLen = len(Blockchain)
+				}
 			}
 			mutex.Unlock()
 		}
@@ -93,9 +99,18 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 			}
 			mutex.Unlock()
 
+			// mutex.Lock()
+			// rw.WriteString(fmt.Sprintf("%s\n", string(bytes)))
+			// rw.Flush()
+			// mutex.Unlock()
+
 			mutex.Lock()
-			rw.WriteString(fmt.Sprintf("%s\n", string(bytes)))
+			rw.WriteString(string(bytes)+"\n")
 			rw.Flush()
+			if len(Blockchain) > LastSentBlockchainLen {
+				fmt.Sprintf("%s\n", string(bytes))
+				LastSentBlockchainLen = len(Blockchain)
+			}
 			mutex.Unlock()
 
 		}
@@ -127,9 +142,15 @@ func p2pWriteData(rw *bufio.ReadWriter) {
 
 			spew.Dump(Blockchain)
 
+			// mutex.Lock()
+			// rw.WriteString(fmt.Sprintf("%s\n", string(bytes)))
+			// rw.Flush()
+			// mutex.Unlock()
+
 			mutex.Lock()
 			rw.WriteString(fmt.Sprintf("%s\n", string(bytes)))
 			rw.Flush()
+			LastSentBlockchainLen = len(Blockchain)
 			mutex.Unlock()
 		}
 	}

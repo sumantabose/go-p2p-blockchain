@@ -12,6 +12,9 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var LastSentBlockchainLen = 0
+var LastRcvdBlockchainLen = 0
+
 // make sure block is valid by checking index, and comparing the hash of the previous block
 func isBlockValid(newBlock, oldBlock Block) bool {
 	if oldBlock.Index+1 != newBlock.Index {
