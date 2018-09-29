@@ -16,7 +16,7 @@ import (
 	var verbose *bool
 	var seed *int64
 	var dataDir *string // data directory prefix where the gob files are stored
-	var bootstrapperIP *string
+	var bootstrapperAddr *string
 
 	var ha host.Host
 
@@ -101,8 +101,16 @@ func readFlags() {
 	verbose = flag.Bool("v", false, "enable verbose")
 	seed = flag.Int64("seed", 0, "set random seed for id generation")
 	dataDir = flag.String("data", "data", "pathname of data directory")
-	bootstrapperIP = flag.String("b", "localhost", "IP of bootstrapper")
+	bootstrapperAddr = flag.String("b", "local", "Address of bootstrapper")
 	flag.Parse()
+
+	if *bootstrapperAddr == "heroku" {
+		*bootstrapperAddr = "https://blockchain-bootstrapper.herokuapp.com/"
+	} else if *bootstrapperAddr == "local" {
+		*bootstrapperAddr = "http://localhost:" + bootstrapperPort + "/"
+	} else {
+		*bootstrapperAddr = "http://" + *bootstrapperAddr + ":" + bootstrapperPort + "/"
+	}
 }
 
 func  GetMyIP() string {

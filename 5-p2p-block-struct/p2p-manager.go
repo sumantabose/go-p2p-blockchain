@@ -86,9 +86,9 @@ func p2pInit() {
 }
 
 func requestPort() { // Requesting PeerPort
-	log.Println("Requesting PeerPort from Bootstrapper http://" + *bootstrapperIP + ":" + bootstrapperPort)
+	log.Println("Requesting PeerPort from Bootstrapper", *bootstrapperAddr) //http://" + *bootstrapperIP + ":" + bootstrapperPort)
 
-	response, err := http.Get("http://" + *bootstrapperIP + ":" + bootstrapperPort + "/port-request")
+	response, err := http.Get(*bootstrapperAddr + "port-request")
 	if err != nil {
 		log.Println(err)
 		log.Fatalln("PANIC: Unable to requestPort() from bootstrapper. Bootstrapper may be down.")
@@ -108,9 +108,9 @@ func requestPort() { // Requesting PeerPort
 }
 
 func queryP2PGraph() { // Query the graph of peers in the P2P Network from the Bootstrapper
-	log.Println("Querying graph of peers from Bootstrapper")
+	log.Println("Querying graph of peers from Bootstrapper", *bootstrapperAddr)
 	
-	response, err := http.Get("http://" + *bootstrapperIP + ":" + bootstrapperPort + "/query-p2p-graph")
+	response, err := http.Get(*bootstrapperAddr + "query-p2p-graph")
 	if err != nil {
 		log.Println(err)
 		return
@@ -159,7 +159,7 @@ func connectP2PNet() {
 }
 
 func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Bootstrapper
-	log.Println("Enrolling in P2P network")
+	log.Println("Enrolling in P2P network at Bootstrapper", *bootstrapperAddr)
 
 	jsonValue, err := json.Marshal(peerProfile)
 	if err != nil {
@@ -167,7 +167,7 @@ func enrollP2PNet() { // Enroll to the P2P Network by adding THIS peer with Boot
 		return
 	}
 
-	url := "http://" + *bootstrapperIP + ":" + bootstrapperPort + "/enroll-p2p-net"
+	url := *bootstrapperAddr + "enroll-p2p-net"
 	response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		log.Println(err)
