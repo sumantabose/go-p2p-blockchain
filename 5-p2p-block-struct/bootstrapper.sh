@@ -1,1 +1,1 @@
-go run bootstrapper/bootstrapper.go -v
+go run bootstrapper/bootstrapper-local.go -v
