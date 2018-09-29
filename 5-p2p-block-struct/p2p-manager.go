@@ -105,6 +105,11 @@ func requestPort() { // Requesting PeerPort
 
 	json.Unmarshal(responseData, &peerProfile.PeerPort)
 	if *verbose { log.Println("PeerPort = ", peerProfile.PeerPort) }
+
+	if peerProfile.PeerPort == 0 {
+		log.Println("PANIC: Exiting Program. PeerPort = 0. Bootstrapper may be down.")
+		os.Exit(1)
+	}
 }
 
 func queryP2PGraph() { // Query the graph of peers in the P2P Network from the Bootstrapper
