@@ -1,12 +1,15 @@
 /* README
 
-Written by Sumanta Bose, 5 Sept 2018
+Written by Sumanta Bose, 1 Oct 2018
 
 MUX server methods available are:
+    http://localhost:port/
     http://localhost:port/next
     http://localhost:port/next/{loop}
     http://localhost:port/info
     http://localhost:port/info/{loc}
+    http://localhost:port/move/{serial}
+    http://localhost:port/post
 
 FLAGS are:
   -data string
