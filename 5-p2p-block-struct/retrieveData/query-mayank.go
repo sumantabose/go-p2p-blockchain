@@ -5,7 +5,12 @@ import (
 	"os"
 	"encoding/gob"
 	"runtime"
+	"github.com/fatih/structs"
 	"github.com/davecgh/go-spew/spew"
+	"encoding/json"
+//	"github.com/tidwall/gjson"
+//	"strconv"
+	
 
 )
 
@@ -86,15 +91,100 @@ func init() { // Idea from https://appliedgo.net/networking/
 	log.SetFlags(log.Lshortfile)
 	gob.Register(RawMaterialTransaction{})
 	gob.Register(DeliveryTransaction{})
-	gob.Register(map[string]interface{}{})
+    gob.Register(map[string]interface{}{})
+}
+
+
+func Query(field string, value interface{}) {
+	var block Block
+	//var rawtx RawMaterialTransaction
+	
+
+	for _,block = range Blockchain {
+		s := structs.New(block)
+		if s.Field(field).Value() == value {
+			
+			//log.Println(block)
+			spew.Dump(block)
+			// log.Println("\n")
+
+			// log.Println((s.Field("TxnPayload")).Value())
+
+			// raw := s.Field("TxnPayload").Value()
+
+			// byte, _ := json.Marshal(raw)
+			// _ = json.Unmarshal(byte, &rawtx)
+
+			// //log.Println(rawtx.ProductCode)
+			// log.Println(rawtx)
+
+			
+		}
+	}
+} 
+
+func QueryTxInfo(txnType int, field string, value interface{}){
+	var block Block
+	var raw RawMaterialTransaction
+	var del DeliveryTransaction
+	
+	for _,block = range Blockchain {
+		s := structs.New(block)
+		if s.Field("TxnType").Value() == txnType {
+
+			if txnType == 1 {
+				byte, _ := json.Marshal(s.Field("TxnPayload").Value())
+				_ = json.Unmarshal(byte, &raw)
+				// raw := s.Field("TxnPayload").Value()
+				// //raw1,_ := raw.(RawMaterialTransaction)
+				rawtx := structs.New(raw)
+				// log.Println(rawtx)
+
+				// log.Println("rawtx field value",rawtx.Field(field).Value())
+				// log.Println("\n")
+				// log.Println("Given field value",value)
+
+				if rawtx.Field(field).Value() == value {
+					//log.Println("Hiii")
+					log.Println(block)
+				}
+
+			} else if txnType == 2 {
+				byte, _ := json.Marshal(s.Field("TxnPayload").Value())
+				_ = json.Unmarshal(byte, &del)
+				// raw := s.Field("TxnPayload").Value()
+				// //raw1,_ := raw.(RawMaterialTransaction)
+				deltx := structs.New(del)
+				// log.Println(deltx)
+
+				// log.Println("rawtx field value",deltx.Field(field).Value())
+				// log.Println("\n")
+				// log.Println("Given field value",value)
+
+				if deltx.Field(field).Value() == value {
+					//log.Println("Hiii")
+					log.Println(block)
+				}
+				
+			}
+
+		}
+	}
 }
 
 func main() {
 	dataFile := "../data5000/blockchain-14.gob"
 	log.Println("Loading Blockchain from", dataFile)
+
 	gobCheck(readGob(&Blockchain, dataFile))
-	log.Println(Blockchain)
-	spew.Dump(Blockchain)
+
+	 //Query("TxnType", 0)
+	 Query("TxnType", 1)
+	 // QueryTxInfo(1,"Quantity",15)
+	 // QueryTxInfo(1,"ProductCode","12")
+	 // QueryTxInfo(2,"SerialNo",70)
+	//QueryTxInfo(2,"ShipmentID","msc")
+	
 }
 
 func readGob(object interface{}, filePath string) error {

@@ -3,8 +3,11 @@ package main
 import (
 	"log"
 	"os"
+	_ "fmt"
 	"encoding/gob"
+	"encoding/json"
 	"runtime"
+	"github.com/tidwall/gjson"
 	"github.com/davecgh/go-spew/spew"
 
 )
@@ -82,8 +85,8 @@ var Blockchain []Block
 
 //////// FUNCTIONS
 
-func init() { // Idea from https://appliedgo.net/networking/
-	log.SetFlags(log.Lshortfile)
+func init() {
+	log.SetFlags(log.Lshortfile) // Idea from https://appliedgo.net/networking/
 	gob.Register(RawMaterialTransaction{})
 	gob.Register(DeliveryTransaction{})
 	gob.Register(map[string]interface{}{})
@@ -93,8 +96,10 @@ func main() {
 	dataFile := "../data5000/blockchain-14.gob"
 	log.Println("Loading Blockchain from", dataFile)
 	gobCheck(readGob(&Blockchain, dataFile))
-	log.Println(Blockchain)
-	spew.Dump(Blockchain)
+	//log.Println(Blockchain)
+	//spew.Dump(Blockchain)
+	//queryRaw("TxnPayload.SerialNo", "88")
+	spew.Dump(query("raw", "TxnPayload.SerialNo", "88"))
 }
 
 func readGob(object interface{}, filePath string) error {
@@ -114,3 +119,67 @@ func gobCheck(e error) { // Inspired from http://www.robotamer.com/code/go/gotam
         os.Exit(1)
     }
 }
+
+//////////////////
+
+
+
+func queryRaw(field string, value string) {
+
+	var rawTxns []interface{}
+
+	for _, block := range Blockchain {
+		if block.TxnType == 1 {
+			blockBytes, _ := json.Marshal(block)
+			blockString := string(blockBytes)
+
+			val := gjson.Get(blockString, "TxnPayload.SerialNo")
+			log.Printf("val %T, %s\n", val, val)
+
+			log.Println(field, value)
+
+			gg := gjson.Get(blockString, "TxnPayload.SerialNo").String()
+			log.Printf("gg %T, %s\n", gg, gg)
+
+
+			if gjson.Get(blockString, field).String() == value {
+				log.Println("here")
+				rawTxns = append(rawTxns, block.TxnPayload)
+				// log.Printf("%T\n", block)
+				// log.Printf("%T\n", block.TxnPayload)
+				// rawTxn = block.TxnPayload
+				// log.Printf("%T\n", rawTxn)
+			}
+		}
+	}
+
+	spew.Dump(rawTxns)
+	//return txnArray
+}
+
+
+func query(txnType string, field string, value string) []interface {} {
+
+	txnTypeMap := map[string]int {
+        "raw": 1,
+        "del": 2,
+    }
+
+	var txnArray []interface{}
+	for _, block := range Blockchain {
+		if block.TxnType == txnTypeMap[txnType] {
+			blockBytes, _ := json.Marshal(block)
+			if gjson.Get(string(blockBytes), field).String() == value {
+				txnArray = append(txnArray, block.TxnPayload)
+			}
+		}
+	}
+	return txnArray
+}
+
+
+
+
+
+
+
