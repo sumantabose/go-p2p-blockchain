@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 	"log"
+	"encoding/json"
+	"github.com/tidwall/gjson"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -76,4 +78,25 @@ func registerGOB() {
 	gob.Register(RawMaterialTransaction{})
 	gob.Register(DeliveryTransaction{})
 	gob.Register(map[string]interface{}{})
+}
+
+func query(txnType string, field string, value string) []interface {} {
+	var txnArray []interface{}
+	txnTypeMap := map[string]int {
+        "raw": 1,
+        "del": 2,
+    }
+
+	mutex.Lock()
+	tempBlockchain := Blockchain
+	mutex.Unlock()
+	for _, block := range tempBlockchain {
+		if block.TxnType == txnTypeMap[txnType] {
+			blockBytes, _ := json.Marshal(block)
+			if gjson.Get(string(blockBytes), "TxnPayload."+field).String() == value {
+				txnArray = append(txnArray, block.TxnPayload)
+			}
+		}
+	}
+	return txnArray
 }

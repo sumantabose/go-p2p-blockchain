@@ -43,7 +43,24 @@ func makeMuxRouter() http.Handler {
 	muxRouter.HandleFunc("/del", handleDeliveryTxnWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/comment", handleCommentWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/connect", handleConnect).Methods("POST")
+	muxRouter.HandleFunc("/query/{type}/{field}/{value}", handleQuery).Methods("GET")
 	return muxRouter
+}
+
+func handleQuery(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+    txnType, _ := params["type"]
+    field, _ := params["field"]
+    value, _ := params["value"]
+
+    TxnArray := query(txnType, field, value)
+	bytes, err := json.MarshalIndent(TxnArray, "", "  ")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	spew.Dump(TxnArray)
+	io.WriteString(w, string(bytes))
 }
 
 // write blockchain when we receive an http request
