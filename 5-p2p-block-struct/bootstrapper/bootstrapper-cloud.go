@@ -1,6 +1,7 @@
 /* README
 
 Written by Sumanta Bose, 29 Sept 2018
+Modified on 2 Oct 2018
 Deployed on: https://blockchain-bootstrapper.herokuapp.com/
 
 */
@@ -65,7 +66,7 @@ func main() {
 
 func launchMUXServer() error { // launch MUX server
     mux := makeMUXRouter()
-    log.Println("HTTP MUX server listening on " + GetMyIP() + ":" + os.Getenv("PORT")) // listenPort is a global const
+    log.Println("HTTP MUX server listening on " + GetMyIP() + ":" + os.Getenv("PORT")) // listenPort is determined on the go
     s := &http.Server{
         Addr:           ":"+os.Getenv("PORT"),
         Handler:        mux,
