@@ -1,7 +1,7 @@
 #!/bin/bash
 
-MYSQL_ROOT="root"
-MYSQL_PASS="123456"
+MYSQL_ROOT=""
+MYSQL_PASS=""
 
 option=$1
 
