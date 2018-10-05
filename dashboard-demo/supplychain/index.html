@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header style="text-align: center; ">
+            NTU Blockchain Dashboard
+        </el-header>
+
+
+        <el-main>
+            <el-row type="flex" justify="center">
+                <el-col :span="6">
+                    <el-form :model="form">
+                        <el-form-item>
+                            <el-input v-model="form.username" id="username" prop="Please input your username"
+                                      placeholder="Username"
+                                      auto-complete="on"></el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-input v-model="form.password" id="password" prop="Please input your password"
+                                      type="password"
+                                      placeholder="Password"
+                                      auto-complete="on"></el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button type="primary" @click="login">Log In</el-button>
+                            <el-button @click="signup">Sign Up</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+
+<style>
+.el-header {
+background-color: #B3C0D1;
+color: #333;
+line-height: 60px;
+}
+</style>
+
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+
+
+    let v = new Vue({
+        el: '#app',
+        methods: {
+            login: function () {
+                let self = this;
+                if (!self.form.username) {
+                    alert("please fill in username");
+                    return;
+                }
+                if (!self.form.password) {
+                    alert('please fill in password');
+                    return;
+                }
+                axios({
+                    method: 'get',
+                    url: 'api/login.php',
+                    params: self.form,
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        if (data.status === "fail") {
+                            alert(data.message);
+                        } else {
+                            location.href = data.message;
+                        }
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+            },
+
+            signup: function () {
+                let self = this;
+                if (!self.form.username) {
+                    alert("please fill in username");
+                    return;
+                }
+                if (!self.form.password) {
+                    alert('please fill in password');
+                    return;
+                }
+                axios({
+                    method: 'post',
+                    url: 'api/signup.php',
+                    params: self.form,
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        alert(data.message);
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+            }
+        },
+
+        data() {
+            return {
+                form: {},
+                result_login: '',
+            }
+        }
+
+
+    })
+
+</script>
+<style scoped>
+    .el-input {
+        width: 300px;
+    }
+</style>
+
+
+</body>
+
+
+</html>
+

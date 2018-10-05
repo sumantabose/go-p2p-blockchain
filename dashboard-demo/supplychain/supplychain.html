@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header style="text-align: center; ">
+            NTU Blockchain Dashboard
+        </el-header>
+        <el-container>
+            <el-aside>
+                <el-row class="tac">
+                    <el-col :span="20">
+                        <el-menu default-active="menu_default"
+                                 ref="menu"
+                                 class="el-menu-vertical-demo sc-menu">
+                            <el-menu-item index="1" @click="switch_div('hello')">
+                                <i class="el-icon-location"></i>
+                                <span>Home Page</span>
+                            </el-menu-item>
+
+                            <el-submenu index="2">
+                                <template slot="title">
+                                    <i class="el-icon-location"></i>
+                                    <span>Participant</span>
+                                </template>
+                                <el-menu-item index="2-1" @click="submit_query_party('factory')">Factory
+                                </el-menu-item>
+                                <el-menu-item index="2-2"
+                                              @click="submit_query_party('shipment1')">Shipment 1
+                                </el-menu-item>
+                                <el-menu-item index="2-3"
+                                              @click="submit_query_party('warehouse')">Warehouse
+                                </el-menu-item>
+                                <el-menu-item index="2-4"
+                                              @click="submit_query_party('shipment2')">Shipment 2
+                                </el-menu-item>
+                                <el-menu-item index="2-5"
+                                              @click="submit_query_party('merchant')">Merchant
+                                </el-menu-item>
+                                <el-menu-item index="2-6"
+                                              @click="submit_query_party('customer')">Customers
+                                </el-menu-item>
+                            </el-submenu>
+                            <el-menu-item index="3" @click="switch_div('product')">
+                                <i class="el-icon-menu"></i>
+                                <span slot="title">Produce List</span>
+                            </el-menu-item>
+                            <el-menu-item index="4" @click="switch_div('all');result_all=[]">
+                                <i class="el-icon-menu"></i>
+                                <span slot="title">View Records</span>
+                            </el-menu-item>
+                            <el-menu-item index="5" @click="switch_div('postrecord');result_all=[]">
+                                <i class="el-icon-menu"></i>
+                                <span slot="title">Post records</span>
+                            </el-menu-item>
+                            <el-menu-item index="5" @click="logout()">
+                                <i class="el-icon-menu"></i>
+                                <span slot="title">Log out</span>
+                            </el-menu-item>
+                        </el-menu>
+                    </el-col>
+                </el-row>
+            </el-aside>
+            <el-main style="margin-left: -80px;" class="sc-center">
+                <div>
+                    <div v-show="action === 'hello'">
+                        <el-row>
+                            <el-col :offset="2">
+                                <h2 class="heading prompt"> WELCOME TO NTU BLOCKCHAIN DASHBOARD!</h2>
+                            </el-col>
+
+                        </el-row>
+                        <el-row>
+                            <el-col>
+                                <br/><br/><br/>
+                                <el-row :gutter="20">
+                                    <el-col :span="4" :offset="2">Factory</el-col>
+                                    <el-col :span="6" :offset="3">Shipment 1</el-col>
+                                    <el-col :span="4" :offset="3">Warehouse</el-col>
+                                </el-row>
+                                <br>
+                                <img src="figure/Manufacturer.png" align="bottom" width="130" height="100"
+                                     @click="jump_to_menu_item('2-1');">
+                                <img src="figure/arrow.png" align="bottom" width="50" height="50">
+                                <img src="figure/truck.png" align="bottom" width="200" height="60"
+                                     @click="jump_to_menu_item('2-2');">
+                                <img src="figure/arrow.png" align="bottom" width="50" height="50">
+                                <img src="figure/warehouse.png" align="bottom" width="170" height="100"
+                                     @click="jump_to_menu_item('2-3');">
+                                <br/><br/><br/>
+                                <el-col :offset="19">
+                                    <img src="figure/arrowdown.png" align="bottom" width="50" height="50">
+                                </el-col>
+                                <br/><br/><br/>
+                                <el-col :offset="1">
+                                    <img src="figure/customer-icon.png" align="bottom" width="80" height="80"
+                                         @click="jump_to_menu_item('2-6');">
+                                    <img src="figure/arrowleft.png" align="bottom" width="50" height="50">
+                                    <img src="figure/shop_small.png" align="bottom" width="130" height="100"
+                                         @click="jump_to_menu_item('2-5');">
+                                     <img src="figure/arrowleft.png" align="bottom" width="50" height="50">
+                                    <img src="figure/truck.png" align="bottom" width="200" height="60"
+                                         @click="jump_to_menu_item('2-4');">
+                                </el-col>
+
+                                <br><br><br>
+                                <el-row :gutter="20">
+                                    <el-col :span="20"><br></el-col>
+                                </el-row>
+                                <el-row :gutter="20">
+                                    <el-col :span="4" :offset="1">Customers</el-col>
+                                    <el-col :span="4" :offset="2"> Merchant</el-col>
+                                    <el-col :span="6" :offset="4">Shipment 2</el-col>
+                                </el-row>
+                                <br><br><br/>
+                                <el-row>
+                                    <el-col :offset="6">
+                                        <el-form>
+                                            <el-form-item label="Simulate one step">
+                                                <el-button @click="submit_next">GO</el-button>
+                                            </el-form-item>
+                                        </el-form>
+                                        <el-form v-model="step" :inline="true" >
+                                            <el-form-item label="Simulate multipule steps:">
+                                                <el-input v-model="step.num" style="width: 50px"></el-input>
+                                            </el-form-item>
+                                            <el-form-item>
+                                                <el-button @click="submit_multisteps">GO</el-button>
+                                            </el-form-item>
+                                        </el-form>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+                    <div v-show="action === 'factory'">
+                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Factory</h2>
+                        <el-row>
+                            <el-col>
+                                <el-table
+                                        :data="result_party"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            fixed="right"
+                                            label="Action"
+                                            width="100">
+                                        <template slot-scope="scope">
+                                            <el-button @click="handleNext(scope.row)" type="text" size="small">Next
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                        <br>
+                    </div>
+
+                    <div v-show="action === 'shipment_1'">
+                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Shipment 1</h2>
+                        <el-row>
+                            <el-col>
+                                <el-table
+                                        :data="result_party"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            fixed="right"
+                                            label="Action"
+                                            width="100">
+                                        <template slot-scope="scope">
+                                            <el-button @click="handleNext(scope.row)" type="text" size="small">Next
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div v-show="action === 'warehouse'">
+                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Warehouse</h2>
+                        <el-row>
+                            <el-col>
+                                <el-table
+                                        :data="result_party"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            fixed="right"
+                                            label="Action"
+                                            width="100">
+                                        <template slot-scope="scope">
+                                            <el-button @click="handleNext(scope.row)" type="text" size="small">Next
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div v-show="action === 'shipment_2'">
+                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Shipment 2</h2>
+                        <el-row>
+                            <el-col>
+                                <el-table
+                                        :data="result_party"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            fixed="right"
+                                            label="Action"
+                                            width="100">
+                                        <template slot-scope="scope">
+                                            <el-button @click="handleNext(scope.row)" type="text" size="small">Next
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div v-show="action === 'merchant'">
+                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Merchant</h2>
+                        <el-row>
+                            <el-col>
+                                <el-table
+                                        :data="result_party"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            fixed="right"
+                                            label="Action"
+                                            width="100">
+                                        <template slot-scope="scope">
+                                            <el-button @click="handleNext(scope.row)" type="text" size="small">Next
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div v-show="action === 'customer'">
+                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Customers</h2>
+                        <el-row>
+                            <el-col>
+                                <el-table
+                                        :data="result_party"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+
+                    <div v-show="action === 'product'">
+                        <el-row>
+                            <el-col>
+                                <el-form ref="form" :model="query_product" label-width="120px">
+                                    <el-form-item label="Product ID">
+                                        <el-input v-model="query_product.id"></el-input>
+                                    </el-form-item>
+                                    <el-form-item>
+                                        <el-button @click="submit_query_product">Query</el-button>
+                                    </el-form-item>
+                                </el-form>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+                    <div v-html="result_product" v-show="action === 'product'">
+                    </div>
+
+                    <div v-show="action === 'all'">
+                        <el-row>
+                            <el-col>
+                                <el-form ref="form" id="form_all">
+                                    <el-form-item label="Query all the records: ">
+                                        <el-button @click="submit_query_all">Query</el-button>
+                                    </el-form-item>
+                                </el-form>
+                            </el-col>
+                        </el-row>
+                        <el-row v-show="action === 'all' && result_all.length>0">
+                            <el-col>
+                                <el-table
+                                        :data="result_all"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="SerialNo"
+                                            label="Serial No."
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Name"
+                                            label="Name"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="CodeNo"
+                                            label="Code"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="Location"
+                                            label="Location"
+                                            width="150">
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+
+                <div v-show="action === 'postrecord'">
+                    <h2 class="heading prompt" style="text-align: center; "> Posr Records</h2>
+                    <el-row>
+                        <el-col>
+                            <el-form ref="postrecord" :model="postrecord" label-width="80px">
+                                <el-form-item label="Name">
+                                    <el-input v-model="postrecord.name"></el-input>
+                                </el-form-item>
+                                <el-form-item label="Code">
+                                    <el-input v-model="postrecord.code"></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click="post_record">Submit</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-col>
+                    </el-row>
+                </div>
+
+
+            </el-main>
+        </el-container>
+
+    </el-container>
+</div>
+<style>
+    .el-header {
+        background-color: #B3C0D1;
+        color: #333;
+        line-height: 60px;
+    }
+
+    .el-aside {
+        color: #333;
+    }
+
+    .sc-menu {
+        min-height: 550px;
+    }
+
+    .sc-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sc_participant_form .el-form-item__content {
+        display: inline-block;
+        width: 80px;
+        text-align: center;
+    }
+
+    .sc_participant_form .el-form-item__label {
+        width: 90px;
+        text-align: left;
+    }
+
+    .sc_participant_form .el-form-item {
+        margin-bottom: 2px;
+    }
+
+    .sc_participant_form {
+        border: thick double #b3c0d0;
+        padding: 0 20px;
+        margin-bottom: 10px;
+        background: #eeeeee;
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    const party_to_page_mapping = {
+        factory: 'factory',
+        shipment1: 'shipment_1',
+        warehouse: 'warehouse',
+        shipment2: 'shipment_2',
+        merchant: 'merchant',
+        customer: 'customer',
+    };
+    let v = new Vue({
+        el: '#app',
+        methods: {
+            switch_div: function (action) {
+                this.action = action;
+            },
+            jump_to_menu_item: function (index) {
+                let self = this;
+                if (index.indexOf('-') > 0) {
+                    try {
+                        self.$refs.menu.open(index.substring(0, index.indexOf('-')))
+                    } catch (e) {
+                    }
+                }
+                self.$refs.menu.activeIndex = index;
+                if (self.$refs.menu.items[index]) {
+                    self.$refs.menu.items[index].handleClick();
+                }
+            },
+            submit_next: function () {
+                let self = this;
+                axios({
+                    method: 'get',
+                    url: 'api/CreateRecord.php',
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        if (data.status === "fail") {
+                            alert(data.message);
+                        } else {
+                            //self.result_post_tx = response.data;
+                            alert(data.message);
+                            //this.form_post_tx={brand_right:0}
+                        }
+                    })
+
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+            },
+            submit_multisteps: function () {
+                let self = this;
+                axios({
+                    method: 'get',
+                    url: 'api/CreateMultiRecords.php',
+                    config: {headers: {'Content-Type': 'multipart/form-data'}},
+                    params: self.step,
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        if (data.status === "fail") {
+                            alert(data.message);
+                        } else {
+                            //self.result_post_tx = response.data;
+                            alert(data.message);
+                            //this.form_post_tx={brand_right:0}
+                        }
+                    })
+
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+                self.step={};
+            },
+            submit_query_all: function () {
+                let self = this;
+                axios({
+                    method: 'get',
+                    url: 'api/info.php',
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        self.result_all = response.data;
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+            },
+            submit_query_party: function (field) {
+                let self = this;
+                axios({
+                    method: 'get',
+                    url: 'api/queryparty.php',
+                    params: {
+                        field: field
+                    },
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        if (data.status === "fail") {
+                            alert(data.message);
+                        } else {
+                            self.result_party = response.data;
+                            self.switch_div(party_to_page_mapping[field]);
+                        }
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+
+            },
+            submit_query_product: function () {
+                let self = this;
+                axios({
+                    method: 'get',
+                    url: 'api/queryproduct.php',
+                    params: self.query_product,
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        self.result_factory = response.data;
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+
+            },
+
+            handleNext: function (record) {
+                let self = this;
+                axios({
+                    method: 'post',
+                    url: 'api/Handlenext.php',
+                    params: {
+                        field: record['SerialNo']
+                    },
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        self.submit_query_party(self.action);
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+
+                //console.log(record);
+
+            },
+
+            post_record: function () {
+                let self = this;
+                axios({
+                    method: 'post',
+                    url: 'api/postrecords.php',
+                    params: self.postrecord,
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        if (data.status === "fail") {
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+
+            },
+
+            logout: function () {
+                let self = this;
+                axios({
+                    method: 'post',
+                    url: 'api/logout.php',
+                    config: {headers: {'Content-Type': 'multipart/form-data'}}
+                })
+                    .then(function (response) {
+                        //handle success
+                        console.log(response);
+                        let data = response.data;
+                        if (data.status === "fail") {
+                            alert(data.message);
+                        } else {
+                            location.href = data.message;
+                        }
+                    })
+                    .catch(function (response) {
+                        //handle error
+                        console.log(response);
+                    });
+
+            }
+
+
+        },
+
+        data() {
+            return {
+                action: 'hello',
+                result_party: [],
+                query_party: {},
+                query_party_options: ['factory', 'truck1', 'warehouse', 'truck2', 'shop'],
+                query_product: {},
+                postrecord: {},
+                result_product: '',
+                result_next: '',
+                result_all: [],
+                menu_default: 2,
+                step: {}
+
+
+            }
+        }
+    })
+    console.log(v)
+</script>
+</body>
+</html>
