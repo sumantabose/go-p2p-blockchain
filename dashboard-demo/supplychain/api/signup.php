@@ -9,7 +9,7 @@ try {
     $stmt1 = $dbh->prepare("INSERT INTO `login` (`username`, `password`) VALUES(?,?)");
     $stmt1->execute([$username, $password]);
 
-    echo json_encode(['status' => 'success', 'message' => 'register successfully!']);
+    echo json_encode(['status' => 'success', 'message' => 'User registration successful!']);
 } catch (PDOException $e) {
     echo json_encode(['status' => 'fail', 'message' => $e->getMessage()]);
 

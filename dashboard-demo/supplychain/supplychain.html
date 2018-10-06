@@ -2,12 +2,19 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>A Generic Supply Chain Dashboard Demo</title>
+    <script>
+      function featureDisabled() {
+          alert("Feature disabled in demo version.");
+      }
+  </script>
 </head>
 <body>
 <div id="app">
     <el-container>
         <el-header style="text-align: center; ">
-            NTU Blockchain Dashboard
+            <b>A Generic Supply Chain Dashboard Demo</b>
         </el-header>
         <el-container>
             <el-aside>
@@ -17,47 +24,71 @@
                                  ref="menu"
                                  class="el-menu-vertical-demo sc-menu">
                             <el-menu-item index="1" @click="switch_div('hello')">
-                                <i class="el-icon-location"></i>
-                                <span>Home Page</span>
+                                <i class="el-icon-star-on"></i>
+                                <span>Home</span>
                             </el-menu-item>
 
                             <el-submenu index="2">
                                 <template slot="title">
                                     <i class="el-icon-location"></i>
-                                    <span>Participant</span>
+                                    <span>Participants</span>
                                 </template>
-                                <el-menu-item index="2-1" @click="submit_query_party('factory')">Factory
+                                <el-menu-item index="2-1" @click="submit_query_party('factory')"><i>Factory</i>
                                 </el-menu-item>
                                 <el-menu-item index="2-2"
-                                              @click="submit_query_party('shipment1')">Shipment 1
+                                              @click="submit_query_party('shipment1')"><i>Shipment 1</i>
                                 </el-menu-item>
                                 <el-menu-item index="2-3"
-                                              @click="submit_query_party('warehouse')">Warehouse
+                                              @click="submit_query_party('warehouse')"><i>Warehouse</i>
                                 </el-menu-item>
                                 <el-menu-item index="2-4"
-                                              @click="submit_query_party('shipment2')">Shipment 2
+                                              @click="submit_query_party('shipment2')"><i>Shipment 2</i>
                                 </el-menu-item>
                                 <el-menu-item index="2-5"
-                                              @click="submit_query_party('merchant')">Merchant
+                                              @click="submit_query_party('merchant')"><i>Merchant</i>
                                 </el-menu-item>
                                 <el-menu-item index="2-6"
-                                              @click="submit_query_party('customer')">Customers
+                                              @click="submit_query_party('customer')"><i>Customers</i>
                                 </el-menu-item>
                             </el-submenu>
-                            <el-menu-item index="3" @click="switch_div('product')">
-                                <i class="el-icon-menu"></i>
-                                <span slot="title">Produce List</span>
-                            </el-menu-item>
-                            <el-menu-item index="4" @click="switch_div('all');result_all=[]">
-                                <i class="el-icon-menu"></i>
+                            <el-menu-item index="3" @click="switch_div('all');result_all=[]">
+                                <i class="el-icon-document"></i>
                                 <span slot="title">View Records</span>
                             </el-menu-item>
-                            <el-menu-item index="5" @click="switch_div('postrecord');result_all=[]">
-                                <i class="el-icon-menu"></i>
-                                <span slot="title">Post records</span>
+                            <el-menu-item index="4" @click="switch_div('product')">
+                                <i class="el-icon-search"></i>
+                                <span slot="title">Query Records</span>
                             </el-menu-item>
-                            <el-menu-item index="5" @click="logout()">
-                                <i class="el-icon-menu"></i>
+                            <el-menu-item index="5" @click="switch_div('postrecord');result_all=[]">
+                                <i class="el-icon-arrow-right"></i>
+                                <span slot="title">Post Record</span>
+                            </el-menu-item>
+                            <el-menu-item index="6" onclick="featureDisabled()">
+                                <i class="el-icon-bell"></i>
+                                <span slot="title">Notifications</span>
+                            </el-menu-item>
+                            <el-menu-item index="7" onclick="featureDisabled()">
+                                <i class="el-icon-message"></i>
+                                <span slot="title">Messages</span>
+                            </el-menu-item>
+                            <el-menu-item index="8" onclick="featureDisabled()">
+                                <i class="el-icon-picture"></i>
+                                <span slot="title">Gallery</span>
+                            </el-menu-item>
+                            <el-menu-item index="9" onclick="featureDisabled()">
+                                <i class="el-icon-upload"></i>
+                                <span slot="title">Backup</span>
+                            </el-menu-item>
+                            <el-menu-item index="10" onclick="featureDisabled()">
+                                <i class="el-icon-printer"></i>
+                                <span slot="title">Print</span>
+                            </el-menu-item>
+                            <el-menu-item index="11" onclick="featureDisabled()">
+                                <i class="el-icon-setting"></i>
+                                <span slot="title">Settings</span>
+                            </el-menu-item>                            
+                            <el-menu-item index="12" @click="logout()">
+                                <i class="el-icon-circle-close"></i>
                                 <span slot="title">Log out</span>
                             </el-menu-item>
                         </el-menu>
@@ -67,15 +98,20 @@
             <el-main style="margin-left: -80px;" class="sc-center">
                 <div>
                     <div v-show="action === 'hello'">
-                        <el-row>
+<!--                         <el-row>
                             <el-col :offset="2">
                                 <h2 class="heading prompt"> WELCOME TO NTU BLOCKCHAIN DASHBOARD!</h2>
                             </el-col>
 
+                        </el-row> -->
+                        <el-row>
+                            <el-col>
+                                <p>This is a dashboard demo for tracking and tracking of products in a simplified 6 party supply chain.</p>
+                            </el-col>
                         </el-row>
                         <el-row>
                             <el-col>
-                                <br/><br/><br/>
+                                <br/><!-- <br/><br/> -->
                                 <el-row :gutter="20">
                                     <el-col :span="4" :offset="2">Factory</el-col>
                                     <el-col :span="6" :offset="3">Shipment 1</el-col>
@@ -102,7 +138,7 @@
                                     <img src="figure/shop_small.png" align="bottom" width="130" height="100"
                                          @click="jump_to_menu_item('2-5');">
                                      <img src="figure/arrowleft.png" align="bottom" width="50" height="50">
-                                    <img src="figure/truck.png" align="bottom" width="200" height="60"
+                                    <img src="figure/truck-inverse.png" align="bottom" width="200" height="60"
                                          @click="jump_to_menu_item('2-4');">
                                 </el-col>
 
@@ -115,12 +151,18 @@
                                     <el-col :span="4" :offset="2"> Merchant</el-col>
                                     <el-col :span="6" :offset="4">Shipment 2</el-col>
                                 </el-row>
-                                <br><br><br/>
+                                <br><br><hr><br/>
                                 <el-row>
+                                    <el-col>
+                                        <p>Simulate production and flow of products in the supply chain - one or multiple steps at a time.</p>
+                                    </el-col>
+                                </el-row>
+
+<!--                                 <el-row>
                                     <el-col :offset="6">
                                         <el-form>
                                             <el-form-item label="Simulate one step">
-                                                <el-button @click="submit_next">GO</el-button>
+                                                <el-button @click="submit_next">Go</el-button>
                                             </el-form-item>
                                         </el-form>
                                         <el-form v-model="step" :inline="true" >
@@ -128,17 +170,46 @@
                                                 <el-input v-model="step.num" style="width: 50px"></el-input>
                                             </el-form-item>
                                             <el-form-item>
-                                                <el-button @click="submit_multisteps">GO</el-button>
+                                                <el-button @click="submit_multisteps">Go</el-button>
+                                            </el-form-item>
+                                        </el-form>
+                                    </el-col>
+                                </el-row> -->
+
+                                <el-row>
+                                    <el-col>
+                                        <el-form v-model="step" :inline="true" >
+                                            <el-form-item label="Simulate one step">
+                                                <el-button @click="submit_next">Go</el-button>
+                                            </el-form-item>
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            <el-form-item label="Simulate multipule steps:">
+                                                <el-input v-model="step.num" style="width: 50px"></el-input>
+                                            </el-form-item>
+                                            <el-form-item>
+                                                <el-button @click="submit_multisteps">Go</el-button>
                                             </el-form-item>
                                         </el-form>
                                     </el-col>
                                 </el-row>
+
                             </el-col>
                         </el-row>
                     </div>
 
                     <div v-show="action === 'factory'">
-                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Factory</h2>
+                        <h2 class="heading prompt" style="text-align: center; "> Factory : List of Products</h2>
                         <el-row>
                             <el-col>
                                 <el-table
@@ -147,17 +218,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -180,7 +251,7 @@
                     </div>
 
                     <div v-show="action === 'shipment_1'">
-                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Shipment 1</h2>
+                        <h2 class="heading prompt" style="text-align: center; "> Shipment 1 : List of Products</h2>
                         <el-row>
                             <el-col>
                                 <el-table
@@ -189,17 +260,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -220,7 +291,7 @@
                         </el-row>
                     </div>
                     <div v-show="action === 'warehouse'">
-                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Warehouse</h2>
+                        <h2 class="heading prompt" style="text-align: center; "> Warehouse : List of Products</h2>
                         <el-row>
                             <el-col>
                                 <el-table
@@ -229,17 +300,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -260,7 +331,7 @@
                         </el-row>
                     </div>
                     <div v-show="action === 'shipment_2'">
-                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Shipment 2</h2>
+                        <h2 class="heading prompt" style="text-align: center; "> Shipment 2 : List of Products</h2>
                         <el-row>
                             <el-col>
                                 <el-table
@@ -269,17 +340,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -300,7 +371,7 @@
                         </el-row>
                     </div>
                     <div v-show="action === 'merchant'">
-                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Merchant</h2>
+                        <h2 class="heading prompt" style="text-align: center; "> Merchant : List of Products</h2>
                         <el-row>
                             <el-col>
                                 <el-table
@@ -309,17 +380,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -340,7 +411,7 @@
                         </el-row>
                     </div>
                     <div v-show="action === 'customer'">
-                        <h2 class="heading prompt" style="text-align: center; "> Goods List in Customers</h2>
+                        <h2 class="heading prompt" style="text-align: center; "> Customers : List of Products</h2>
                         <el-row>
                             <el-col>
                                 <el-table
@@ -349,17 +420,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -408,17 +479,17 @@
                                     <el-table-column
                                             prop="SerialNo"
                                             label="Serial No."
-                                            width="150">
+                                            width="130">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Name"
-                                            label="Name"
-                                            width="150">
+                                            label="Pdt. Name"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="CodeNo"
-                                            label="Code"
-                                            width="150">
+                                            label="Pdt. Code"
+                                            width="160">
                                     </el-table-column>
                                     <el-table-column
                                             prop="Location"
@@ -432,14 +503,14 @@
                 </div>
 
                 <div v-show="action === 'postrecord'">
-                    <h2 class="heading prompt" style="text-align: center; "> Posr Records</h2>
+                    <h2 class="heading prompt" style="text-align: center; "> Post Record</h2>
                     <el-row>
                         <el-col>
-                            <el-form ref="postrecord" :model="postrecord" label-width="80px">
-                                <el-form-item label="Name">
+                            <el-form ref="postrecord" :model="postrecord" label-width="120px">
+                                <el-form-item label="Product Name">
                                     <el-input v-model="postrecord.name"></el-input>
                                 </el-form-item>
-                                <el-form-item label="Code">
+                                <el-form-item label="Product Code">
                                     <el-input v-model="postrecord.code"></el-input>
                                 </el-form-item>
                                 <el-form-item>

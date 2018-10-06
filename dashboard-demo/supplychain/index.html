@@ -2,12 +2,14 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>A Generic Supply Chain Dashboard Demo</title>
 </head>
 <body>
 <div id="app">
     <el-container>
         <el-header style="text-align: center; ">
-            NTU Blockchain Dashboard
+            <b>A Generic Supply Chain Dashboard Demo</b>
         </el-header>
 
 
@@ -61,11 +63,11 @@ line-height: 60px;
             login: function () {
                 let self = this;
                 if (!self.form.username) {
-                    alert("please fill in username");
+                    alert("Please fill in the username");
                     return;
                 }
                 if (!self.form.password) {
-                    alert('please fill in password');
+                    alert('Please fill in the password');
                     return;
                 }
                 axios({
@@ -93,11 +95,11 @@ line-height: 60px;
             signup: function () {
                 let self = this;
                 if (!self.form.username) {
-                    alert("please fill in username");
+                    alert("Please fill in the username");
                     return;
                 }
                 if (!self.form.password) {
-                    alert('please fill in password');
+                    alert('Please fill in the password');
                     return;
                 }
                 axios({

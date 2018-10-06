@@ -23,7 +23,7 @@ try {
         setcookie('au', $auth_key, 0, '/', $_SERVER['HTTP_HOST']);
 
 
-        $url = 'http://localhost/supplychain/supplychain.html';
+        $url = 'supplychain.html';
 
 
         echo json_encode(['status' => 'success', 'message' => $url]);
