@@ -14,7 +14,7 @@
 <div id="app">
     <el-container>
         <el-header style="text-align: center; ">
-            <b>A GENERIC SUPPLY CHAIN DASHBOARD DEMO</b>
+            <b>A Generic Supply Chain Dashboard Demo</b>
         </el-header>
         <el-container>
             <el-aside>
@@ -31,7 +31,7 @@
                             <el-submenu index="2">
                                 <template slot="title">
                                     <i class="el-icon-location"></i>
-                                    <span style='font-size: 150%;'><b>Participants</b></span>
+                                    <span style='font-size: 150%;'>Participants</span>
                                 </template>
                                 <el-menu-item index="2-1" @click="submit_query_party('factory')"><i>Factory</i>
                                 </el-menu-item>
@@ -98,41 +98,102 @@
             <el-main style="margin-left: -80px;" class="sc-center">
                 <div>
                     <div v-show="action === 'hello'">
+<!--                         <el-row>
+                            <el-col :offset="2">
+                                <h2 class="heading prompt"> WELCOME TO NTU BLOCKCHAIN DASHBOARD!</h2>
+                            </el-col>
+
+                        </el-row> -->
                         <el-row>
-                            <el-col :offset="3">
-                                <p>&nbsp;&nbsp;&nbsp;&nbsp;This dashboard is a demo for tracking/tracing products in a simplified 6 party supply chain using blockchain.</p>
+                            <el-col>
+                                <p>This is a dashboard demo for tracking and tracing of products in a simplified 6 party supply chain.</p>
                             </el-col>
                         </el-row>
-                        <br/>
                         <el-row>
-                            <el-col :offset="4">
-                                <img src="figure/supply-chain.png" width="909" height="531" alt="A Generic Supply Chain" usemap="#supplychainmap">
-                                <map name="supplychainmap">
-                                    <area target="" alt="Factory" title="Factory" @click="jump_to_menu_item('2-1');" coords="96,239,48" shape="circle">
-                                    <area target="" alt="Distributor" title="Distributor" @click="jump_to_menu_item('2-2');" coords="240,239,48" shape="circle">
-                                    <area target="" alt="Warehouse" title="Warehouse" @click="jump_to_menu_item('2-3');" coords=
-                                    "383,239,48" shape="circle">
-                                    <area target="" alt="Trader" title="Trader" @click="jump_to_menu_item('2-4');" coords="527,239,48" shape="circle">
-                                    <area target="" alt="Merchant" title="Merchant" @click="jump_to_menu_item('2-5');" coords="670,239,48" shape="circle">
-                                    <area target="" alt="Customer" title="Customer" @click="jump_to_menu_item('2-6');" coords="814,239,48" shape="circle">
-                                </map>
-                            </el-col>
                             <el-col>
-                                <br/>
-                                <hr size="10"><br/>
+                                <br/><!-- <br/><br/> -->
+                                <el-row :gutter="20">
+                                    <el-col :span="4" :offset="2">Factory</el-col>
+                                    <el-col :span="6" :offset="3">Shipment 1</el-col>
+                                    <el-col :span="4" :offset="3">Warehouse</el-col>
+                                </el-row>
+                                <br>
+                                <img src="figure/Manufacturer.png" align="bottom" width="130" height="100"
+                                     @click="jump_to_menu_item('2-1');">
+                                <img src="figure/arrow.png" align="bottom" width="50" height="50">
+                                <img src="figure/truck.png" align="bottom" width="200" height="60"
+                                     @click="jump_to_menu_item('2-2');">
+                                <img src="figure/arrow.png" align="bottom" width="50" height="50">
+                                <img src="figure/warehouse.png" align="bottom" width="170" height="100"
+                                     @click="jump_to_menu_item('2-3');">
+                                <br/><br/><br/>
+                                <el-col :offset="19">
+                                    <img src="figure/arrowdown.png" align="bottom" width="50" height="50">
+                                </el-col>
+                                <br/><br/><br/>
+                                <el-col :offset="1">
+                                    <img src="figure/customer-icon.png" align="bottom" width="80" height="80"
+                                         @click="jump_to_menu_item('2-6');">
+                                    <img src="figure/arrowleft.png" align="bottom" width="50" height="50">
+                                    <img src="figure/shop_small.png" align="bottom" width="130" height="100"
+                                         @click="jump_to_menu_item('2-5');">
+                                     <img src="figure/arrowleft.png" align="bottom" width="50" height="50">
+                                    <img src="figure/truck-inverse.png" align="bottom" width="200" height="60"
+                                         @click="jump_to_menu_item('2-4');">
+                                </el-col>
+
+                                <br><br><br>
+                                <el-row :gutter="20">
+                                    <el-col :span="20"><br></el-col>
+                                </el-row>
+                                <el-row :gutter="20">
+                                    <el-col :span="4" :offset="1">Customers</el-col>
+                                    <el-col :span="4" :offset="2"> Merchant</el-col>
+                                    <el-col :span="6" :offset="4">Shipment 2</el-col>
+                                </el-row>
+                                <br><br><hr><br/>
                                 <el-row>
-                                    <el-col :offset="4">
+                                    <el-col>
                                         <p>Simulate production and flow of products in the supply chain - one or multiple steps at a time.</p>
                                     </el-col>
                                 </el-row>
 
+<!--                                 <el-row>
+                                    <el-col :offset="6">
+                                        <el-form>
+                                            <el-form-item label="Simulate one step">
+                                                <el-button @click="submit_next">Go</el-button>
+                                            </el-form-item>
+                                        </el-form>
+                                        <el-form v-model="step" :inline="true" >
+                                            <el-form-item label="Simulate multipule steps:">
+                                                <el-input v-model="step.num" style="width: 50px"></el-input>
+                                            </el-form-item>
+                                            <el-form-item>
+                                                <el-button @click="submit_multisteps">Go</el-button>
+                                            </el-form-item>
+                                        </el-form>
+                                    </el-col>
+                                </el-row> -->
+
                                 <el-row>
-                                    <el-col :offset="4">
+                                    <el-col>
                                         <el-form v-model="step" :inline="true" >
                                             <el-form-item label="Simulate one step">
                                                 <el-button @click="submit_next">Go</el-button>
                                             </el-form-item>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
                                             <el-form-item label="Simulate multipule steps:">
                                                 <el-input v-model="step.num" style="width: 50px"></el-input>
                                             </el-form-item>
@@ -469,32 +530,22 @@
 <style>
 
     @font-face {
-        font-family: Sansation_Light;
+        font-family: myFirstFont;
         src: url("./static/sansation/Sansation_Light.ttf");
     }
 
     * {
-       font-family: Sansation_Light;
+       font-family: myFirstFont;
     }
 
     .el-header {
-        background-color: #EEE8AA;
+        background-color: #B3C0D1;
         color: #333;
         line-height: 60px;
         font-size: 150%;
-        font-weight: bold;
     }
 
     .el-menu-item {
-        font-size: 150%;
-        font-weight: bold;
-    }
-
-    .el-form {
-        font-size: 150%;
-    }
-
-    p {
         font-size: 150%;
     }
 

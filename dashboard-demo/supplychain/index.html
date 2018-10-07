@@ -9,29 +9,31 @@
 <div id="app">
     <el-container>
         <el-header style="text-align: center; ">
-            <b>A Generic Supply Chain Dashboard Demo</b>
+            <b>A GENERIC SUPPLY CHAIN DASHBOARD DEMO</b>
         </el-header>
 
 
         <el-main>
             <el-row type="flex" justify="center">
-                <el-col :span="6">
+                <el-col :offset="1" :span="6">
                     <el-form :model="form">
                         <el-form-item>
                             <el-input v-model="form.username" id="username" prop="Please input your username"
-                                      placeholder="Username"
+                                      placeholder="Username" style="width: 320px" 
                                       auto-complete="on"></el-input>
                         </el-form-item>
 
                         <el-form-item>
                             <el-input v-model="form.password" id="password" prop="Please input your password"
                                       type="password"
-                                      placeholder="Password"
+                                      placeholder="Password" style="width: 320px" 
                                       auto-complete="on"></el-input>
                         </el-form-item>
 
                         <el-form-item>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <el-button type="primary" @click="login">Log In</el-button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <el-button @click="signup">Sign Up</el-button>
                         </el-form-item>
                     </el-form>
@@ -43,11 +45,24 @@
 </div>
 
 <style>
-.el-header {
-background-color: #B3C0D1;
-color: #333;
-line-height: 60px;
-}
+
+    @font-face {
+        font-family: Sansation_Light;
+        src: url("./static/sansation/Sansation_Light.ttf");
+    }
+
+    * {
+       font-family: Sansation_Light;
+    }
+
+    .el-header {
+        background-color: #EEE8AA;
+        color: #333;
+        line-height: 60px;
+        font-size: 150%;
+        font-weight: bold;
+    }
+
 </style>
 
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
