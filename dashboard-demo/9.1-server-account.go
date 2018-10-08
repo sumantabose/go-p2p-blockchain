@@ -1,22 +1,30 @@
 /* README
 
-Written by Sumanta Bose, 8 Oct 2018
+Written by Sumanta Bose, 9 Oct 2018
 
 MUX server methods available are:
     http://localhost:port/
+
+    http://localhost:port/info
+    http://localhost:port/info/{location}
+
     http://localhost:port/next
     http://localhost:port/next/{loop}
-    http://localhost:port/info
-    http://localhost:port/info/{loc}
-    http://localhost:port/move/{serial}
+    
     http://localhost:port/post/{CodeNo}/{Name}/{Cost}
     http://localhost:port/query/{field}/{value}
+    http://localhost:port/move/{serial}
+
     http://localhost:port/history/{SerialNo}
+    http://localhost:port/account/{direction}/{location}
+
     http://localhost:port/blockchain
 
 FLAGS are:
-  -data string
-        pathname of data directory (default "data")
+  -pdts string
+        pathname of product data directory (default "pdts")
+  -accs string
+        pathname of accounts data directory (default "accs")
   -locs int
         total locations in supply chain (default 6)
   -port int
@@ -73,9 +81,9 @@ var ProductData []Product // `Product` array, to be saved as gob file
 /////
 
 type Event struct { // A Snapshot of History
-    Snapshot int
-    Timestamp string
-    Location int
+    Snapshot int `json:"Snapshot"`
+    Timestamp string `json:"Timestamp"`
+    Location int `json:"Location"`
 }
 
 type Block struct { // An element of Blockchain
@@ -89,14 +97,14 @@ type Block struct { // An element of Blockchain
 /////
 
 type Entry struct { // A Snapshot of Account
-    Snapshot int
-    Timestamp string
+    Snapshot int `json:"Snapshot"`
+    Timestamp string `json:"Timestamp"`
     Name string `json:"Name"`
     Cost int `json:"Cost"`
     SerialNo int `json:"SerialNo"`
     CodeNo int `json:"CodeNo"`
-    Party int `json:"CodeNo"` // Transacting Party
-    Direction string `json:"CodeNo"` // In or Out
+    Party int `json:"Party"` // Transacting Party
+    Direction string `json:"Direction"` // In or Out
 }
 
 var Blockchain []Block
@@ -104,6 +112,10 @@ var Blockchain []Block
 ///// LIST OF FUNCTIONS
 
 func init() {
+
+    gob.Register(Product{}) ; gob.Register(Event{}) ; gob.Register(Block{}) ; gob.Register(Entry{})
+    gob.Register(map[string]interface{}{})
+
     log.SetFlags(log.Lshortfile)
 
     log.Printf("Welcome to Sumanta's Supply Chain Dashboard Server!")
@@ -145,14 +157,20 @@ func launchMUXServer() error { // launch MUX server
 func makeMUXRouter() http.Handler { // create handlers
     muxRouter := mux.NewRouter()
     muxRouter.HandleFunc("/", handleHome).Methods("GET")
+
     muxRouter.HandleFunc("/info", handleInfoAll).Methods("GET")
-    muxRouter.HandleFunc("/info/{loc}", handleInfoLoc).Methods("GET")
+    muxRouter.HandleFunc("/info/{location}", handleInfoLoc).Methods("GET")
+
     muxRouter.HandleFunc("/next", handleNext).Methods("GET")
     muxRouter.HandleFunc("/next/{loop}", handleNextLoop).Methods("GET")
+
     muxRouter.HandleFunc("/post/{CodeNo}/{Name}/{Cost}", handlePost).Methods("GET")
     muxRouter.HandleFunc("/query/{field}/{value}", handleQuery).Methods("GET")
-    muxRouter.HandleFunc("/history/{SerialNo}", handleHistory).Methods("GET")
     muxRouter.HandleFunc("/move/{serial}", handleMove).Methods("GET")
+
+    muxRouter.HandleFunc("/history/{SerialNo}", handleHistory).Methods("GET")    
+    muxRouter.HandleFunc("/account/{direction}/{location}", handleAccount).Methods("GET")
+
     muxRouter.HandleFunc("/blockchain", handleBlockchain).Methods("GET")
     return muxRouter
 }
@@ -254,10 +272,10 @@ func handleInfoLoc(w http.ResponseWriter, r *http.Request) {
     var ProductElements []Product
 
     params := mux.Vars(r)
-    loc, err := strconv.Atoi(params["loc"])
+    location, err := strconv.Atoi(params["location"])
     if err == nil {
         for i, _ := range ProductData {
-            if ProductData[i].Location == loc {
+            if ProductData[i].Location == location {
                 ProductElements = append(ProductElements, ProductData[i])
             }
         }
@@ -294,7 +312,7 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
                 if TempProductData[j].SerialNo == SerialNo {
                     e := Event {
                         Snapshot: i,
-                        Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*i)).String(), // random date increment
+                        Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*i)).Add(time.Duration(genRandInt(30000,0))*time.Second).Format("02-01-2006 15:04:05 Mon"), // random date increment
                         Location: TempProductData[j].Location,
                     }
                     History = append(History, e)
@@ -313,7 +331,7 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 func handleBlockchain(w http.ResponseWriter, r *http.Request) {
     genesisBlock := Block {
         Index: 0,
-        Timestamp: StartTime.String(),
+        Timestamp: StartTime.Add(time.Duration(genRandInt(30000,0))*time.Second).Format("02-01-2006 15:04:05 Mon"),
         PrevHash: "GENESIS-BLOCK",
     }
     genesisBlock.ThisHash = calculateHash(genesisBlock)
@@ -335,7 +353,7 @@ func handleBlockchain(w http.ResponseWriter, r *http.Request) {
         gobCheck(readGob(&TempProductData, readFile))
         b := Block {
             Index: i,
-            Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*i)).String(), // random date increment
+            Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*i)).Add(time.Duration(genRandInt(30000,0))*time.Second).Format("02-01-2006 15:04:05 Mon"), // random date increment
             BlockProductData: TempProductData,
             PrevHash: Blockchain[len(Blockchain)-1].ThisHash,
         }
@@ -344,6 +362,26 @@ func handleBlockchain(w http.ResponseWriter, r *http.Request) {
     }
 
     respondWithJSON(w, r, http.StatusCreated, Blockchain)
+}
+
+func handleAccount(w http.ResponseWriter, r *http.Request) {
+    var returnAcc []Entry
+
+    params := mux.Vars(r)
+    direction := params["direction"]
+    location, err := strconv.Atoi(params["location"])
+    
+    if err == nil && (direction == "in" || direction == "out") {
+        filePath := *accsDir + "/" + direction + "-" + strconv.Itoa(location) + ".gob"
+        gobCheck(readGob(&returnAcc, filePath))
+    }
+    // respondWithJSON(w, r, http.StatusCreated, returnAcc)
+    bytes, err := json.MarshalIndent(returnAcc, "", "  ")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    io.WriteString(w, string(bytes))
 }
 
 func handleNext(w http.ResponseWriter, r *http.Request) {
@@ -469,20 +507,20 @@ func updateAccount(p Product, snapshot int) { // AFTER location update. VERY VER
     newLocation := p.Location        ; outFile := *accsDir + "/out-" + strconv.Itoa(newLocation) + ".gob" 
     oldLocation := newLocation - 1   ; inFile := *accsDir + "/in-" + strconv.Itoa(oldLocation) + ".gob"
 
-    var outAcc []Entry  ; gobCheck(readGob(&outAcc, outFile))   ; fmt.Printf("\x1b[32m%s\x1b[0m> ", spew.Sdump(outAcc))
-    var inAcc []Entry   ; gobCheck(readGob(&inAcc, inFile))     ; fmt.Printf("\x1b[32m%s\x1b[0m> ", spew.Sdump(inAcc))
+    var outAcc []Entry  ; gobCheck(readGob(&outAcc, outFile))  // ; fmt.Printf("\x1b[32m%s\x1b[0m> ", spew.Sdump(outAcc))
+    var inAcc []Entry   ; gobCheck(readGob(&inAcc, inFile))    // ; fmt.Printf("\x1b[32m%s\x1b[0m> ", spew.Sdump(inAcc))
 
     e := Entry {
         Snapshot: snapshot,
-        Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*snapshot)).String(), // random date increment
+        Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*snapshot)).Add(time.Duration(genRandInt(30000,0))*time.Second).Format("02-01-2006 15:04:05 Mon"), // random date increment
         Name: p.Name,
         Cost: p.Cost,
         SerialNo: p.SerialNo,
         CodeNo: p.CodeNo,
     }
 
-    out_e := e  ; out_e.Party = oldLocation ; out_e.Direction = "out" ; outAcc = append(outAcc, out_e)
-    in_e := e   ; in_e.Party = newLocation  ; in_e.Direction = "in"   ; inAcc = append(inAcc, in_e)
+    outE := e  ; outE.Party = oldLocation   ; outE.Direction = "out"    ; outAcc = append(outAcc, outE)
+    inE := e   ; inE.Party = newLocation    ; inE.Direction = "in"      ; inAcc = append(inAcc, inE)
 
     gobCheck(writeAccGob(outAcc, "out", newLocation))
     gobCheck(writeAccGob(inAcc, "in", oldLocation))
