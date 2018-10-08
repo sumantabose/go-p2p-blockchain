@@ -1,4 +1,10 @@
 data
 data*
 data/*
+pdts
+pdts*
+pdts/*
+accs
+accs*
+accs/*
 .DS_Store
