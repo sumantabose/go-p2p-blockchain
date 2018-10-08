@@ -322,12 +322,7 @@ func handleBlockchain(w http.ResponseWriter, r *http.Request) {
         Blockchain = append(Blockchain, b)
     }
 
-    bytes, err := json.MarshalIndent(Blockchain, "", "  ")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    io.WriteString(w, string(bytes))
+    respondWithJSON(w, r, http.StatusCreated, Blockchain)
 }
 
 func handleNext(w http.ResponseWriter, r *http.Request) {
