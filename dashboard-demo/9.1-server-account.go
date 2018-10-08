@@ -72,13 +72,13 @@ var ProductData []Product // `Product` array, to be saved as gob file
 
 /////
 
-type Event struct {
+type Event struct { // A Snapshot of History
     Snapshot int
     Timestamp string
     Location int
 }
 
-type Block struct {
+type Block struct { // An element of Blockchain
     Index int
     Timestamp string
     BlockProductData []Product
@@ -88,14 +88,15 @@ type Block struct {
 
 /////
 
-type Entry struct {
+type Entry struct { // A Snapshot of Account
     Snapshot int
-    // Timestamp string
+    Timestamp string
     Name string `json:"Name"`
     Cost int `json:"Cost"`
     SerialNo int `json:"SerialNo"`
     CodeNo int `json:"CodeNo"`
     Party int `json:"CodeNo"` // Transacting Party
+    Direction string `json:"CodeNo"` // In or Out
 }
 
 var Blockchain []Block
@@ -170,8 +171,9 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
         if serial <= len(ProductData) && serial > 0 {
             if ProductData[serial-1].Location < *totalLocs {
                 ProductData[serial-1].Location = ProductData[serial-1].Location + 1
+                updateAccount(ProductData[serial-1], len(ProductData))
                 pdt = ProductData[serial-1]
-                gobCheck(writeGob(ProductData, len(ProductData)))
+                gobCheck(writePdtGob(ProductData, len(ProductData)))
                 respondWithJSON(w, r, http.StatusCreated, pdt)
             }
         }
@@ -194,7 +196,7 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
     if err1 == nil && err2 == nil {
         fmt.Println("Adding to ProductData:", newProduct)
         ProductData = append(ProductData, newProduct)
-        gobCheck(writeGob(ProductData, len(ProductData)))
+        gobCheck(writePdtGob(ProductData, len(ProductData)))
         respondWithJSON(w, r, http.StatusCreated, newProduct)
     }    
 }
@@ -346,7 +348,7 @@ func handleBlockchain(w http.ResponseWriter, r *http.Request) {
 
 func handleNext(w http.ResponseWriter, r *http.Request) {
     newProduct := updateProductData()
-    gobCheck(writeGob(ProductData, len(ProductData)))
+    gobCheck(writePdtGob(ProductData, len(ProductData)))
     respondWithJSON(w, r, http.StatusCreated, newProduct)
 }
 
@@ -360,7 +362,7 @@ func handleNextLoop(w http.ResponseWriter, r *http.Request) {
             // handleNext(w,r) // RISKY (don't attempt): server.go:2923: http: multiple response.WriteHeader calls
             newProduct := updateProductData()
             newProducts = append(newProducts, newProduct)
-            gobCheck(writeGob(ProductData, len(ProductData)))
+            gobCheck(writePdtGob(ProductData, len(ProductData)))
         }
         respondWithJSON(w, r, http.StatusCreated, newProducts)
     }
@@ -377,7 +379,11 @@ func updateProductData() Product {
     for i, _ := range ProductData {
         if i < len(ProductData) - 1 { // ignore the newest element i.e. newProduct
             if ProductData[i].Location < *totalLocs{
-                ProductData[i].Location = ProductData[i].Location + int(math.Floor(float64(genRandInt(100,0))/80)) // 20% random increment
+                randIncrement := int(math.Floor(float64(genRandInt(100,0))/80)) // 20% random increment
+                ProductData[i].Location = ProductData[i].Location + randIncrement
+                if randIncrement == 1 {
+                    updateAccount(ProductData[i], len(ProductData))
+                }
             }
         }
     }
@@ -399,8 +405,19 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
     w.Write(response)
 }
 
-func writeGob(object interface{}, fileNoCount int) error {
+func writePdtGob(object interface{}, fileNoCount int) error {
     filePath := *pdtsDir + "/product-data-" + strconv.Itoa(fileNoCount) + ".gob"
+    file, err := os.Create(filePath)
+    if err == nil {
+        encoder := gob.NewEncoder(file)
+        encoder.Encode(object)
+    }
+    file.Close()
+    return err
+}
+
+func writeAccGob(object interface{}, direction string, location int) error {
+    filePath := *accsDir + "/" + direction + "-" + strconv.Itoa(location) + ".gob"
     file, err := os.Create(filePath)
     if err == nil {
         encoder := gob.NewEncoder(file)
@@ -440,6 +457,35 @@ func CreateAccounts() {
         log.Println("`", *accsDir, "` does not exist. Creating directory.")
         os.Mkdir(*accsDir, 0755) // https://stackoverflow.com/questions/14249467/os-mkdir-and-os-mkdirall-permission-value
     }
+    var blankAcc []Entry
+
+    for i := 1 ; i <= *totalLocs ; i ++ {
+        gobCheck(writeAccGob(blankAcc, "out", i))
+        gobCheck(writeAccGob(blankAcc, "in", i))
+    }    
+}
+
+func updateAccount(p Product, snapshot int) { // AFTER location update. VERY VERY IMP "AFTER"
+    newLocation := p.Location        ; outFile := *accsDir + "/out-" + strconv.Itoa(newLocation) + ".gob" 
+    oldLocation := newLocation - 1   ; inFile := *accsDir + "/in-" + strconv.Itoa(oldLocation) + ".gob"
+
+    var outAcc []Entry  ; gobCheck(readGob(&outAcc, outFile))   ; fmt.Printf("\x1b[32m%s\x1b[0m> ", spew.Sdump(outAcc))
+    var inAcc []Entry   ; gobCheck(readGob(&inAcc, inFile))     ; fmt.Printf("\x1b[32m%s\x1b[0m> ", spew.Sdump(inAcc))
+
+    e := Entry {
+        Snapshot: snapshot,
+        Timestamp: StartTime.AddDate(0, 0, genRandInt(3,1)+(3*snapshot)).String(), // random date increment
+        Name: p.Name,
+        Cost: p.Cost,
+        SerialNo: p.SerialNo,
+        CodeNo: p.CodeNo,
+    }
+
+    out_e := e  ; out_e.Party = oldLocation ; out_e.Direction = "out" ; outAcc = append(outAcc, out_e)
+    in_e := e   ; in_e.Party = newLocation  ; in_e.Direction = "in"   ; inAcc = append(inAcc, in_e)
+
+    gobCheck(writeAccGob(outAcc, "out", newLocation))
+    gobCheck(writeAccGob(inAcc, "in", oldLocation))
 }
 
 func readGob(object interface{}, filePath string) error {
