@@ -491,16 +491,15 @@ func LoadProductData() { // load from existing files, if any
 }
 
 func CreateAccounts() {
+    var blankAcc []Entry
     if _, err := os.Stat(*accsDir); os.IsNotExist(err) { // if *accsDir does not exist
         log.Println("`", *accsDir, "` does not exist. Creating directory.")
         os.Mkdir(*accsDir, 0755) // https://stackoverflow.com/questions/14249467/os-mkdir-and-os-mkdirall-permission-value
-    }
-    var blankAcc []Entry
-
-    for i := 1 ; i <= *totalLocs ; i ++ {
-        gobCheck(writeAccGob(blankAcc, "out", i))
-        gobCheck(writeAccGob(blankAcc, "in", i))
-    }    
+        for i := 1 ; i <= *totalLocs ; i ++ {
+            gobCheck(writeAccGob(blankAcc, "out", i))
+            gobCheck(writeAccGob(blankAcc, "in", i))
+        } 
+    }  
 }
 
 func updateAccount(p Product, snapshot int) { // AFTER location update. VERY VERY IMP "AFTER"
