@@ -105,7 +105,7 @@ func readFlags() {
 	flag.Parse()
 
 	if *bootstrapperAddr == "heroku" {
-		*bootstrapperAddr = "https://blockchain-bootstrapper.herokuapp.com/"
+		*bootstrapperAddr = "https://ntu-blockchain-bootstrapper.herokuapp.com/"
 	} else if *bootstrapperAddr == "local" {
 		*bootstrapperAddr = "http://localhost:" + bootstrapperPort + "/"
 	} else {
