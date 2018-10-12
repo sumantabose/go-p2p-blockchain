@@ -130,6 +130,14 @@ func init() {
 
     StartTime = time.Now()
     StartTime = StartTime.AddDate(0, -6, 10) // random negative offset
+
+    genesisBlock := Block {
+        Index: 0,
+        Timestamp: StartTime.Add(time.Duration(genRandInt(30000,0))*time.Second).Format("02-01-2006 15:04:05 Mon"),
+        PrevHash: "GENESIS-BLOCK",
+    }
+    genesisBlock.ThisHash = calculateHash(genesisBlock)
+    Blockchain = append(Blockchain, genesisBlock)
 }
 
 func main() {
@@ -329,13 +337,6 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleBlockchain(w http.ResponseWriter, r *http.Request) {
-    genesisBlock := Block {
-        Index: 0,
-        Timestamp: StartTime.Add(time.Duration(genRandInt(30000,0))*time.Second).Format("02-01-2006 15:04:05 Mon"),
-        PrevHash: "GENESIS-BLOCK",
-    }
-    genesisBlock.ThisHash = calculateHash(genesisBlock)
-    Blockchain = append(Blockchain, genesisBlock)
 
     files, err := ioutil.ReadDir(*pdtsDir) // pdtsDir from flag
     if err != nil { log.Fatal(err) }
@@ -348,7 +349,7 @@ func handleBlockchain(w http.ResponseWriter, r *http.Request) {
 
     var TempProductData []Product
 
-    for i := 1; i <= mostRecectFileNo; i++ {
+    l := len(Blockchain) ; for i := l; i <= mostRecectFileNo; i++ {
         readFile := *pdtsDir + "/product-data-" + strconv.Itoa(i) + ".gob"
         gobCheck(readGob(&TempProductData, readFile))
         b := Block {
