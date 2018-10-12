@@ -7,8 +7,9 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"io"
+	"os"
 	"log"
-	"strconv"
+	// "strconv"
 )
 
 type NewTarget struct { // Used to force a P2P connection through MUX [May dissable this feature later]
@@ -19,9 +20,10 @@ type NewTarget struct { // Used to force a P2P connection through MUX [May dissa
 func muxServer() error {
 	mux := makeMuxRouter()
 	//httpPort := os.Getenv("PORT")
-	log.Println("HTTP Server Listening on port :", peerProfile.PeerPort+1500) // peerProfile.PeerPort in peer-manager.go
+	// log.Println("HTTP Server Listening on port :", peerProfile.PeerPort+1500) // peerProfile.PeerPort in peer-manager.go
+	log.Println("HTTP MUX server listening on " + GetMyIP() + ":" + os.Getenv("PORT")) // listenPort is determined on the go
 	s := &http.Server{
-		Addr:           ":" + strconv.Itoa(peerProfile.PeerPort+1500),
+		Addr:           ":" + os.Getenv("PORT"),
 		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -38,13 +40,23 @@ func muxServer() error {
 // create handlers
 func makeMuxRouter() http.Handler {
 	muxRouter := mux.NewRouter()
-	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
+	muxRouter.HandleFunc("/start", handleStart).Methods("GET")
+	muxRouter.HandleFunc("/blockchain", handleGetBlockchain).Methods("GET")
 	muxRouter.HandleFunc("/raw", handleRawMaterialTxnWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/del", handleDeliveryTxnWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/comment", handleCommentWriteBlock).Methods("POST")
 	muxRouter.HandleFunc("/connect", handleConnect).Methods("POST")
 	muxRouter.HandleFunc("/query/{type}/{field}/{value}", handleQuery).Methods("GET")
 	return muxRouter
+}
+
+func handleStart(w http.ResponseWriter, r *http.Request) {
+	if PeerStart == false {
+		p2pInit() // Initialize P2P Network from Bootstrapper
+		PeerStart = true
+	} else {
+		respondWithJSON(w, r, http.StatusBadRequest, "Bad request. Peer is already up.")
+	}
 }
 
 func handleQuery(w http.ResponseWriter, r *http.Request) {

@@ -6,9 +6,9 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
+	"os"
 	"log"
 	mrand "math/rand"
-	"os"
 	"time"
 	"bytes"
 	"os/signal"
@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"io/ioutil"
     "encoding/json"
+    "strconv"
 
 	golog "github.com/ipfs/go-log"
 	libp2p "github.com/libp2p/go-libp2p"
@@ -61,7 +62,8 @@ func p2pInit() {
 	// We can control the verbosity level for all loggers with:
 	golog.SetAllLoggers(gologging.INFO) // Change to DEBUG for extra info
 
-	requestPort() // request THIS peer's port from bootstrapper
+	// requestPort() // request THIS peer's port from bootstrapper
+	herokuAssignPort() // auto assign port in heroku
 	if *verbose { log.Println("PeerIP = ", GetMyIP()) }
 	queryP2PGraph() // query graph of peers in the P2P Network
 
@@ -83,6 +85,10 @@ func p2pInit() {
 			}
 		}
 	}()
+}
+
+func herokuAssignPort() {
+	peerProfile.PeerPort, _ = strconv.Atoi(os.Getenv("PORT"))
 }
 
 func requestPort() { // Requesting PeerPort

@@ -20,6 +20,8 @@ import (
 
 	var ha host.Host
 
+	var PeerStart = false
+
 /////
 
 // Raw Material Transaction (Type 1)
@@ -98,10 +100,10 @@ var mutex = &sync.Mutex{}
 func readFlags() {
 	// Parse options from the command line
 	secio = flag.Bool("secio", true, "enable secio")	
-	verbose = flag.Bool("v", false, "enable verbose")
+	verbose = flag.Bool("v", true, "enable verbose")
 	seed = flag.Int64("seed", 0, "set random seed for id generation")
 	dataDir = flag.String("data", "data", "pathname of data directory")
-	bootstrapperAddr = flag.String("b", "local", "Address of bootstrapper")
+	bootstrapperAddr = flag.String("b", "heroku", "Address of bootstrapper")
 	flag.Parse()
 
 	if *bootstrapperAddr == "heroku" {
