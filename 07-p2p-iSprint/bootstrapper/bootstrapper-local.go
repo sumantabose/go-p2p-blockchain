@@ -54,7 +54,7 @@ func init() {
     log.SetFlags(log.Lshortfile)
     verbose = flag.Bool("v", false, "enable verbose")
     flag.Parse()
-    MaxPeerPort = 4999 // starting peer port
+    MaxPeerPort = 3499 // starting peer port
 }
 
 func main() {

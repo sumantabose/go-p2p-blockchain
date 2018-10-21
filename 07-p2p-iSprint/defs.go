@@ -53,7 +53,7 @@ type DeliveryTransaction struct {
 	DeliveryStatus string 	
 	DeliveryType string
 	Product []Product
-	Document Document
+	Document []Document
 }
 type Product struct {
 	ProductCode string

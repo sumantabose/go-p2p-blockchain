@@ -95,7 +95,7 @@ func handleCommentWriteBlock(w http.ResponseWriter, r *http.Request) {
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
 		mutex.Lock()
 		Blockchain = append(Blockchain, newBlock)
-		save2File()
+		// save2File()
 		mutex.Unlock()
 		spew.Dump(Blockchain)
 	}
@@ -124,7 +124,7 @@ func handleRawMaterialTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
 		mutex.Lock()
 		Blockchain = append(Blockchain, newBlock)
-		save2File()
+		// save2File()
 		mutex.Unlock()
 		spew.Dump(Blockchain)
 	}
@@ -151,7 +151,7 @@ func handleDeliveryTxnWriteBlock(w http.ResponseWriter, r *http.Request) {
 	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
 		mutex.Lock()
 		Blockchain = append(Blockchain, newBlock)
-		save2File()
+		// save2File()
 		mutex.Unlock()
 		spew.Dump(Blockchain)
 	}

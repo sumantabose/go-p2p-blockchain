@@ -65,7 +65,7 @@ func p2pReadData(rw *bufio.ReadWriter) {
 			if len(chain) >= len(Blockchain) {
 				Blockchain = chain
 
-				save2File()
+				// save2File()
 
 				bytes, err := json.MarshalIndent(Blockchain, "", "  ")
 				if err != nil {

@@ -7,7 +7,7 @@ import (
 func init() { // Idea from https://appliedgo.net/networking/
 	log.SetFlags(log.Lshortfile)
 	readFlags() // in defs.go
-	registerGOB() // in blockchain.go
+	// registerGOB() // in blockchain.go
 }
 
 func main() {

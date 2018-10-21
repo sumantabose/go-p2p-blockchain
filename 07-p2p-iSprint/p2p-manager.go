@@ -9,7 +9,7 @@ import (
 	"log"
 	mrand "math/rand"
 	"os"
-	"time"
+	// "time"
 	"bytes"
 	"os/signal"
     "syscall"
@@ -74,15 +74,15 @@ func p2pInit() {
 	enrollP2PNet()
 	log.Println("Peerstore().Peers() after connecting =", ha.Peerstore().Peers())
 
-	go func() {
-		for {
-			time.Sleep(5 * time.Second)
-			fmt.Println("\nList of peers:")
-			for i, _ := range ha.Peerstore().Peers() {
-				log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		time.Sleep(5 * time.Second)
+	// 		fmt.Println("\nList of peers:")
+	// 		for i, _ := range ha.Peerstore().Peers() {
+	// 			log.Println("-->", ha.Peerstore().Peers()[i].Pretty())
+	// 		}
+	// 	}
+	// }()
 }
 
 func requestPort() { // Requesting PeerPort
@@ -140,7 +140,7 @@ func connectP2PNet() {
 	if len(PeerGraph) == 0 { // first node in the network
 		log.Println("I'm first peer. Creating Genesis Block.")
 		Blockchain = append(Blockchain, generateGenesisBlock())
-		save2File()
+		// save2File()
 		spew.Dump(Blockchain)
 		log.Println("I'm first peer. Listening for connections.")
 	} else {
