@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 	"log"
+	"strings"
 	"encoding/json"
 	"github.com/tidwall/gjson"
 
@@ -94,14 +95,30 @@ func query(txnType string, field string, value string) []interface {} {
         "del": 2,
     }
 
+    if *verbose { log.Println("field = ", field) }
+
+    newField := ""
+    for i, subField := range strings.SplitAfter(field, ".") {
+        if i > 0 {
+        	newField = newField + "#."
+        }
+        newField = newField + subField
+    }
+    if *verbose { log.Println("newField = ", newField) }
+
 	mutex.Lock()
 	tempBlockchain := Blockchain
 	mutex.Unlock()
 	for _, block := range tempBlockchain {
 		if block.TxnType == txnTypeMap[txnType] {
 			blockBytes, _ := json.Marshal(block)
-			if gjson.Get(string(blockBytes), "TxnPayload."+field).String() == value {
-				txnArray = append(txnArray, block.TxnPayload)
+
+			result := gjson.Get(string(blockBytes), "TxnPayload."+newField)
+			for _, item := range result.Array() {
+				if (item.String() == value) {
+					txnArray = append(txnArray, block.TxnPayload)
+					break
+				}
 			}
 		}
 	}
