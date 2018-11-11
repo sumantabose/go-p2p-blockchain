@@ -1,9 +1,18 @@
 /* README
 
-Written by Sumanta Bose, 11 Nov 2018
+Written by Sumanta Bose, 12 Nov 2018
 
 MUX server methods available are:
     http://localhost:port/
+
+    http://localhost:port/info
+    http://localhost:port/info/{status}/{member}
+
+    http://localhost:port/add
+    http://localhost:port/add/{loop}
+
+    http://localhost:port/move/{serial}
+    http://localhost:port/post
 
 FLAGS are:
   -bldata string
@@ -390,4 +399,3 @@ func genRandInt(n int, offset int) int { // generate Random Integer less than 'n
     val := myRand.Intn(n) + offset
     return val
 }
-
