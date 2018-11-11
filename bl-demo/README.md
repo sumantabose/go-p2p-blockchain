@@ -15,11 +15,8 @@ MUX server methods available are:
 
 FLAGS are:
 
-  -`bldata` *string*
-        pathname of BL data storage directory (default "bldata")
+  -`bldata` *string* : pathname of BL data storage directory (default "bldata")
         
-  -`members` *int*
-        total number of members in the BL supply chain (default 5) // 4 + 1
+  -`members` *int* : total number of members in the BL supply chain (default 5) // 4 + 1
         
-  -`port` *int*
-        mux server listen port (default 8080)
+  -`port` *int* : mux server listen port (default 8080)
