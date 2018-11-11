@@ -14,6 +14,7 @@ MUX server methods available are:
 - http://localhost:port/post
 
 FLAGS are:
+
   -`bldata` *string*
         pathname of BL data storage directory (default "bldata")
         
