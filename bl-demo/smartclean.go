@@ -1,6 +1,6 @@
 /* README
 
-Written by Sumanta Bose, 12 Nov 2018
+Written by Sumanta Bose, 13 Nov 2018
 
 MUX server methods available are:
     http://localhost:port/
@@ -16,7 +16,7 @@ MUX server methods available are:
 FLAGS are:
   -dataDir string
         pathname of BL data storage directory (default "bldata")
-  -members int
+  -toilets int
         total number of members in the BL supply chain (default 5) // 4 + 1
   -port int
         mux server listen port (default 8080)
